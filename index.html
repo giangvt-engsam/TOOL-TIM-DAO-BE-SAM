@@ -3,219 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Công cụ tìm kiếm dao bế</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Công cụ tìm kiếm khuôn dao</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --success-color: #2ecc71;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --radius: 8px;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+            --highlight: #fff9c4;
         }
         
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text);
             line-height: 1.6;
+            min-height: 100vh;
             padding: 20px;
+        }
+        
+        .container {
             max-width: 1200px;
             margin: 0 auto;
         }
         
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
+        .app-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
         }
         
         header {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
         
         .subtitle {
             font-size: 1.1rem;
             opacity: 0.9;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+        
+        .author {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            font-style: italic;
         }
         
         .search-section {
-            background-color: white;
-            padding: 25px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            padding: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
         }
         
         .search-box {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
         
-        #searchInput {
+        input[type="text"] {
             flex: 1;
-            padding: 15px;
-            border: 2px solid #ddd;
+            padding: 16px 20px;
+            border: 2px solid var(--border);
             border-radius: var(--radius);
-            font-size: 1rem;
-            transition: border-color 0.3s;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: var(--background);
         }
         
-        #searchInput:focus {
+        input[type="text"]:focus {
             outline: none;
-            border-color: var(--secondary-color);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         
-        #searchBtn {
-            padding: 15px 25px;
-            background-color: var(--secondary-color);
+        button {
+            background: var(--primary);
             color: white;
             border: none;
+            padding: 16px 28px;
             border-radius: var(--radius);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 16px;
             font-weight: 600;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
         
-        #searchBtn:hover {
-            background-color: #2980b9;
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
         
-        .search-info {
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #666;
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .suggestion {
+            color: var(--text-light);
+            font-size: 14px;
             text-align: center;
         }
         
-        .data-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+        .code-number {
+            font-weight: 600;
+            color: var(--primary);
+            background: rgba(37, 99, 235, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         
-        .section-header {
+        .code-number:hover {
+            background: rgba(37, 99, 235, 0.2);
+        }
+        
+        .results-section {
+            padding: 0;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+            padding: 24px;
+            margin: 0;
+            border-radius: 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .summary-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .summary-item {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-code {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        
+        .summary-count {
+            color: var(--success);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .results-container {
+            padding: 24px;
+        }
+        
+        .result-group {
+            margin-bottom: 32px;
+        }
+        
+        .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
         }
         
-        h2 {
-            color: var(--primary-color);
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
         }
         
-        #resultCount {
-            background-color: var(--secondary-color);
+        .result-count {
+            background: var(--primary);
             color: white;
-            padding: 5px 15px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.9rem;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-        
-        thead {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        th {
-            padding: 15px;
-            text-align: left;
             font-weight: 600;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        th:last-child {
-            border-right: none;
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
         }
         
-        tbody tr {
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.2s;
+        .result-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
         
-        tbody tr:hover {
-            background-color: #f9f9f9;
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
         }
         
-        td {
-            padding: 15px;
-            border-right: 1px solid #eee;
-            color: #333;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .stt-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .stt-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        .stt-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .khachhang-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: right;
+        }
+        
+        .khachhang-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        .khachhang-value {
+            font-weight: 600;
+            color: var(--text);
             font-size: 0.95rem;
         }
         
-        td:last-child {
-            border-right: none;
+        .content {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            padding: 12px;
+            background: var(--background);
+            border-radius: 8px;
         }
         
-        .customer-group {
-            background-color: #f8f9fa;
-            border-top: 2px solid #3498db;
+        .highlight {
+            background-color: var(--highlight);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
         }
         
-        .customer-group td {
-            font-weight: bold;
-            color: var(--primary-color);
-            background-color: #e8f4fc;
+        .details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
         }
         
-        .spacer-row td {
-            height: 10px;
-            background-color: #f5f5f5;
-            padding: 0;
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: var(--text);
+            padding: 8px 12px;
+            background: var(--background);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .price-value {
+            color: var(--success);
+            border-left-color: var(--success);
+            font-weight: 700;
+        }
+        
+        .ghichu-value {
+            font-style: italic;
+            color: var(--warning);
+            border-left-color: var(--warning);
         }
         
         .no-results {
             text-align: center;
-            padding: 40px;
-            color: #666;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .no-results h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: var(--text);
         }
         
         .loading {
             text-align: center;
-            padding: 30px;
-            color: var(--secondary-color);
+            padding: 60px 20px;
+            color: var(--text-light);
         }
         
-        .loading i {
-            font-size: 2rem;
-            margin-bottom: 15px;
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
         
         @keyframes spin {
@@ -223,40 +403,25 @@
             100% { transform: rotate(360deg); }
         }
         
-        .customer-name {
-            font-weight: 600;
-        }
-        
-        .mold-name {
-            font-weight: 500;
-        }
-        
-        .price {
-            font-weight: 500;
-        }
-        
-        .floor {
-            font-weight: 500;
-        }
-        
-        .note {
-            font-size: 0.9rem;
-        }
-        
-        footer {
-            text-align: center;
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
             padding: 20px;
-            color: #666;
-            font-size: 0.9rem;
-            border-top: 1px solid #eee;
-            margin-top: 20px;
+            border-radius: var(--radius);
+            border-left: 4px solid #dc2626;
+            margin: 20px;
         }
         
-        .highlight {
-            background-color: #fffacd;
-            font-weight: bold;
-            padding: 2px 4px;
-            border-radius: 3px;
+        .ready-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        
+        .ready-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            color: var(--success);
         }
         
         @media (max-width: 768px) {
@@ -264,286 +429,419 @@
                 flex-direction: column;
             }
             
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
             h1 {
-                font-size: 2rem;
+                font-size: 1.75rem;
             }
             
-            .search-section, .data-section {
-                padding: 15px;
+            .details {
+                grid-template-columns: 1fr;
             }
             
-            th, td {
+            .detail-item.full-width {
+                grid-column: 1;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
                 padding: 10px;
+            }
+            
+            .search-section, .results-container {
+                padding: 20px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            
+            .khachhang-container {
+                text-align: left;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><i class="fas fa-search"></i> Công cụ tìm kiếm Dao Bế</h1>
-        </header>
-        
-        <section class="search-section">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Nhập tên khách hàng hoặc tên khuôn dao...">
-                <button id="searchBtn"><i class="fas fa-search"></i> Tìm kiếm</button>
-            </div>
-            <div class="search-info">
-                Thử gõ tên dao bạn đang cần tìm
-            </div>
-        </section>
-        
-        <section class="data-section">
-            <div class="section-header">
-                <h2><i class="fas fa-list"></i> Kết quả tìm kiếm</h2>
-                <div id="resultCount">Đang tải...</div>
-            </div>
+        <div class="app-card">
+            <header>
+                <div class="logo">🔍</div>
+                <h1>Công cụ tìm kiếm khuôn dao</h1>
+                <div class="subtitle">Tìm khuôn dao theo thông tin có sẵn</div>
+                <div class="author">Made by SAM</div>
+            </header>
             
-            <div class="loading" id="loadingIndicator">
-                <i class="fas fa-spinner"></i>
-                <p>Đang tải dữ liệu...</p>
-            </div>
-            
-            <div class="table-container">
-                <table id="resultsTable">
-                    <thead>
-                        <tr>
-                            <th width="20%">Tên khách hàng</th>
-                            <th width="25%">Tên khuôn dao</th>
-                            <th width="10%">Giá dao</th>
-                            <th width="10%">Tầng</th>
-                            <th width="30%">Ghi chú</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- Dữ liệu sẽ được thêm vào đây -->
-                    </tbody>
-                </table>
-                <div class="no-results" id="noResults">
-                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
-                    <h3>Không tìm thấy kết quả nào</h3>
-                    <p>Hãy thử tìm kiếm với từ khóa khác</p>
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Nhập từ khóa tìm kiếm (tên khách hàng, tên khuôn dao, ghi chú)">
+                        <button id="searchButton">Tìm Kiếm</button>
+                    </div>
+                    <div class="suggestion">
+                        <strong>Gợi ý:</strong> Thử tìm kiếm bằng từ khóa chung hoặc tên cụ thể
+                    </div>
                 </div>
             </div>
-        </section>
-        
-        <footer>
-            <p>Công cụ tìm kiếm Dao Bế | Dữ liệu đồng bộ từ Google Sheets</p>
-        </footer>
+            
+            <div id="resultsSection" class="results-section">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Đang tải dữ liệu từ Google Sheets...</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Biến lưu trữ dữ liệu gốc
-        let allData = [];
+        // URL của Google Sheet CSV mới
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTirzkQ-KBQblCZgb9Jk4rop75HJ5cBwRi30kg_L_DpLIpxOb_XHZEk_bAO92RYtg/pub?gid=1135434967&single=true&output=csv';
         
-        // DOM Elements
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-        const tableBody = document.getElementById('tableBody');
-        const resultCount = document.getElementById('resultCount');
-        const noResults = document.getElementById('noResults');
-        const loadingIndicator = document.getElementById('loadingIndicator');
+        // Biến lưu trữ dữ liệu từ Google Sheet
+        let sheetData = [];
         
-        // Hàm tải dữ liệu từ Google Sheets
-        async function loadData() {
+        // Hàm tải dữ liệu từ Google Sheet CSV
+        async function loadSheetData() {
             try {
-                loadingIndicator.style.display = 'block';
-                tableBody.innerHTML = '';
+                showLoading('Đang tải dữ liệu từ Google Sheets...');
                 
-                // Thử cả 2 cách để lấy dữ liệu
-                // Cách 1: Sử dụng Google Sheets API qua JSON
-                // Từ link: https://docs.google.com/spreadsheets/d/1hCRv77JoHZI7x7eDjFFkW215s94oWx9z/edit
-                // Chuyển thành JSON: https://docs.google.com/spreadsheets/d/1hCRv77JoHZI7x7eDjFFkW215s94oWx9z/gviz/tq?tqx=out:json
-                
-                const sheetId = '1hCRv77JoHZI7x7eDjFFkW215s94oWx9z';
-                const gid = '1135434967';
-                const jsonUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
-                
-                console.log('Đang tải dữ liệu từ:', jsonUrl);
-                
-                const response = await fetch(jsonUrl);
-                const text = await response.text();
-                
-                // Xử lý dữ liệu JSON từ Google Sheets
-                const jsonData = JSON.parse(text.substring(47, text.length - 2));
-                console.log('Dữ liệu JSON từ Google Sheets:', jsonData);
-                
-                // Lấy dữ liệu từ JSON
-                const rows = jsonData.table.rows;
-                
-                // Lưu dữ liệu vào mảng - lấy cột B, C, D, E, F
-                allData = [];
-                
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    const cells = row.c;
-                    
-                    // Kiểm tra xem có đủ dữ liệu không
-                    if (cells && cells.length >= 6) {
-                        const customerName = cells[1] ? (cells[1].v || '') : '';
-                        const moldName = cells[2] ? (cells[2].v || '') : '';
-                        const price = cells[3] ? (cells[3].v || '') : '';
-                        const floor = cells[4] ? (cells[4].v || '') : '';
-                        const note = cells[5] ? (cells[5].v || '') : '';
-                        
-                        // Chỉ thêm nếu có dữ liệu
-                        if (customerName || moldName || price || floor || note) {
-                            allData.push({
-                                customerName: customerName.toString(),
-                                moldName: moldName.toString(),
-                                price: price.toString(),
-                                floor: floor.toString(),
-                                note: note.toString()
-                            });
-                        }
-                    }
+                const response = await fetch(CSV_URL);
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP: ${response.status}`);
                 }
                 
-                // Ẩn loading và hiển thị dữ liệu
-                loadingIndicator.style.display = 'none';
-                displayData(allData);
+                const csvText = await response.text();
                 
-                console.log(`Đã tải ${allData.length} bản ghi`);
+                // Chuyển đổi CSV thành mảng đối tượng, bỏ qua 2 dòng đầu
+                sheetData = parseCSV(csvText);
+                console.log('Dữ liệu đã tải:', sheetData);
+                
+                // Ẩn trạng thái loading
+                hideLoading();
+                
+                // Hiển thị thông báo sẵn sàng
+                showReadyMessage();
                 
             } catch (error) {
                 console.error('Lỗi khi tải dữ liệu:', error);
+                showError('Không thể tải dữ liệu từ Google Sheet. Vui lòng kiểm tra kết nối internet và thử lại.');
+            }
         }
         
-        // Hàm highlight từ khóa tìm kiếm trong văn bản
-        function highlightText(text, keyword) {
-            if (!keyword.trim() || !text) return text;
+        // Hàm phân tích CSV, bỏ qua 2 dòng đầu
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            const result = [];
             
-            const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`(${escapedKeyword})`, 'gi');
-            return text.replace(regex, '<span class="highlight">$1</span>');
-        }
-        
-        // Hàm hiển thị dữ liệu với nhóm khách hàng
-        function displayData(data) {
-            tableBody.innerHTML = '';
+            if (lines.length <= 2) return result; // Bỏ qua nếu có ít hơn 3 dòng
             
-            if (data.length === 0) {
-                noResults.style.display = 'block';
-                resultCount.textContent = '0 kết quả';
-                return;
+            // Lấy tiêu đề cột từ dòng thứ 3 (index 2) và xử lý BOM
+            const headers = lines[2].split(',').map(header => 
+                header.trim().replace(/^\uFEFF/, '') // Loại bỏ BOM nếu có
+            );
+            
+            console.log('Headers:', headers); // Debug để xem tên cột
+            
+            // Xử lý từng dòng dữ liệu bắt đầu từ dòng thứ 4 (index 3)
+            for (let i = 3; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const obj = {};
+                const values = parseCSVLine(line);
+                
+                // Gán giá trị theo index cột (B=1, C=2, D=3, E=4, F=5 trong Excel)
+                // Tuy nhiên, chúng ta đang xử lý theo tên cột từ header
+                
+                // Map theo tên cột đã xác định từ header
+                headers.forEach((header, index) => {
+                    // Chỉ lấy các cột cần thiết
+                    const colIndex = index + 1; // Excel index (1-based)
+                    if (colIndex >= 2 && colIndex <= 6) { // Chỉ lấy cột B đến F
+                        obj[header] = (values[index] || '').trim();
+                    }
+                });
+                
+                // Thêm STT tự động
+                obj.STT = (i - 2).toString();
+                
+                // Chỉ thêm vào kết quả nếu có dữ liệu
+                if (Object.values(obj).some(value => value && value !== '')) {
+                    result.push(obj);
+                }
             }
             
-            noResults.style.display = 'none';
-            resultCount.textContent = `${data.length} kết quả`;
-            
-            const searchKeyword = searchInput.value.trim();
-            let lastCustomer = null;
-            
-            // Sắp xếp dữ liệu theo tên khách hàng để nhóm lại
-            const sortedData = [...data].sort((a, b) => {
-                if (a.customerName < b.customerName) return -1;
-                if (a.customerName > b.customerName) return 1;
-                return 0;
-            });
-            
-            sortedData.forEach((item, index) => {
-                // Kiểm tra nếu khách hàng thay đổi thì thêm dòng phân cách
-                if (lastCustomer !== null && item.customerName !== lastCustomer) {
-                    // Thêm dòng trống để phân cách giữa các khách hàng
-                    const spacerRow = document.createElement('tr');
-                    spacerRow.className = 'spacer-row';
-                    spacerRow.innerHTML = `<td colspan="5"></td>`;
-                    tableBody.appendChild(spacerRow);
-                }
-                
-                // Nếu là khách hàng mới, thêm dòng nhóm
-                if (item.customerName !== lastCustomer) {
-                    lastCustomer = item.customerName;
-                    
-                    const groupRow = document.createElement('tr');
-                    groupRow.className = 'customer-group';
-                    
-                    // Highlight tên khách hàng nếu có từ khóa tìm kiếm
-                    const customerNameHTML = searchKeyword ? 
-                        highlightText(lastCustomer, searchKeyword) : 
-                        lastCustomer;
-                    
-                    groupRow.innerHTML = `
-                        <td colspan="5">
-                            <i class="fas fa-user" style="margin-right: 8px;"></i>
-                            ${customerNameHTML || 'Khách hàng không tên'}
-                        </td>
-                    `;
-                    tableBody.appendChild(groupRow);
-                }
-                
-                // Thêm dòng dữ liệu
-                const row = document.createElement('tr');
-                
-                // Tạo nội dung - chỉ highlight trong cột tìm kiếm
-                const customerNameHTML = item.customerName || '';
-                
-                // Highlight tên khuôn dao nếu có từ khóa
-                const moldNameHTML = searchKeyword ? 
-                    highlightText(item.moldName, searchKeyword) : 
-                    item.moldName;
-                
-                const priceHTML = item.price || '';
-                const floorHTML = item.floor || '';
-                const noteHTML = item.note || '';
-                
-                row.innerHTML = `
-                    <td><div class="customer-name">${customerNameHTML}</div></td>
-                    <td><div class="mold-name">${moldNameHTML}</div></td>
-                    <td><div class="price">${priceHTML}</div></td>
-                    <td><span class="floor">${floorHTML}</span></td>
-                    <td><div class="note">${noteHTML}</div></td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
+            return result;
         }
         
-        // Hàm tìm kiếm
-        function searchData() {
-            const keyword = searchInput.value.trim().toLowerCase();
+        // Hàm phân tích dòng CSV, xử lý trường hợp có dấu phẩy trong giá trị
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
             
-            if (!keyword) {
-                // Nếu không có từ khóa, hiển thị tất cả dữ liệu
-                displayData(allData);
-                return;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
             }
             
-            // Tìm kiếm không phân biệt chữ hoa/thường
-            const filteredData = allData.filter(item => {
-                return (
-                    (item.customerName && item.customerName.toLowerCase().includes(keyword)) ||
-                    (item.moldName && item.moldName.toLowerCase().includes(keyword))
+            result.push(current);
+            return result.map(value => value.replace(/^"|"$/g, '').trim()); // Loại bỏ dấu ngoặc kép
+        }
+        
+        // Hàm highlight từ khóa trong nội dung (không phân biệt hoa thường)
+        function highlightText(content, keywords) {
+            if (!content || !keywords.length) return content;
+            
+            let highlightedContent = content;
+            keywords.forEach(keyword => {
+                if (keyword.trim()) {
+                    // Tạo regex với flag 'gi' (global, case-insensitive)
+                    const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                    highlightedContent = highlightedContent.replace(regex, '<span class="highlight">$1</span>');
+                }
+            });
+            return highlightedContent;
+        }
+        
+        // Hàm hiển thị loading
+        function showLoading(message) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+        
+        // Hàm ẩn loading
+        function hideLoading() {
+            // Chỉ ẩn nếu đang hiển thị loading
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection.querySelector('.loading')) {
+                resultsSection.innerHTML = '';
+            }
+        }
+        
+        // Hàm hiển thị thông báo sẵn sàng
+        function showReadyMessage() {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.innerHTML = `
+                <div class="ready-message">
+                    <div class="ready-icon">✅</div>
+                    <h3>Dữ liệu đã sẵn sàng!</h3>
+                    <p>Hãy nhập từ khóa để bắt đầu tìm kiếm</p>
+                    <p style="font-size: 0.9rem; margin-top: 10px;">Tổng số bản ghi: ${sheetData.length}</p>
+                </div>
+            `;
+        }
+        
+        // Hàm hiển thị lỗi
+        function showError(message) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        // Hàm tìm kiếm trong dữ liệu (không phân biệt hoa thường)
+        function searchData(searchText) {
+            if (!searchText.trim()) {
+                return [];
+            }
+            
+            // Tách các từ khóa từ input
+            const keywords = searchText.split(/[\s,]+/)
+                .map(keyword => keyword.trim())
+                .filter(keyword => keyword);
+            
+            if (keywords.length === 0) return [];
+            
+            // Tìm kiếm các bản ghi chứa ít nhất một từ khóa trong các trường cần thiết
+            const results = sheetData.filter(row => {
+                // Kiểm tra trong các trường: Tên khách hàng, Tên khuôn dao, Ghi chú
+                const khachHang = row['Tên khách hàng'] || '';
+                const khuonDao = row['Tên khuôn dao'] || '';
+                const ghiChu = row['Ghi chú'] || '';
+                
+                // Kết hợp tất cả các trường để tìm kiếm
+                const searchString = `${khachHang} ${khuonDao} ${ghiChu}`.toLowerCase();
+                
+                // Kiểm tra xem có từ khóa nào khớp không
+                return keywords.some(keyword => 
+                    searchString.includes(keyword.toLowerCase())
                 );
             });
             
-            displayData(filteredData);
+            return {
+                results: results,
+                keywords: keywords
+            };
         }
         
-        // Hàm tìm kiếm theo thời gian thực
-        function realtimeSearch() {
-            // Đợi một chút để tránh tìm kiếm quá nhiều lần
-            clearTimeout(window.searchTimeout);
-            window.searchTimeout = setTimeout(searchData, 300);
+        // Hàm hiển thị kết quả
+        function displayResults(searchData) {
+            const resultsSection = document.getElementById('resultsSection');
+            const { results, keywords } = searchData;
+            
+            // Xóa kết quả cũ
+            resultsSection.innerHTML = '';
+            
+            // Hiển thị tổng hợp kết quả
+            if (results.length > 0) {
+                // Tạo summary card
+                const summaryDiv = document.createElement('div');
+                summaryDiv.className = 'summary-card';
+                
+                let summaryHTML = `
+                    <div class="summary-title">
+                        <span>📊 TỔNG HỢP KẾT QUẢ</span>
+                    </div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-code">Tìm thấy</div>
+                            <div class="summary-count">${results.length} kết quả</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-code">Từ khóa</div>
+                            <div class="summary-count">${keywords.join(', ')}</div>
+                        </div>
+                    </div>
+                `;
+                
+                summaryDiv.innerHTML = summaryHTML;
+                resultsSection.appendChild(summaryDiv);
+                
+                // Tạo container cho kết quả chi tiết
+                const resultsContainer = document.createElement('div');
+                resultsContainer.className = 'results-container';
+                
+                // Tiêu đề kết quả
+                let resultsHTML = `
+                    <div class="result-group">
+                        <div class="result-header">
+                            <div class="result-title">Kết quả tìm kiếm</div>
+                            <div class="result-count">${results.length} kết quả</div>
+                        </div>
+                        <div class="results-grid">
+                `;
+                
+                // Hiển thị chi tiết từng kết quả
+                results.forEach((item, index) => {
+                    const khachHang = item['Tên khách hàng'] || 'Chưa có thông tin';
+                    const khuonDao = item['Tên khuôn dao'] || 'Chưa có thông tin';
+                    const giaDao = item['Giá dao'] || 'Chưa có thông tin';
+                    const tang = item['Tầng'] || 'Chưa có thông tin';
+                    const ghiChu = item['Ghi chú'] || 'Không có ghi chú';
+                    
+                    // Highlight các từ khóa trong các trường
+                    const highlightedKhachHang = highlightText(khachHang, keywords);
+                    const highlightedKhuonDao = highlightText(khuonDao, keywords);
+                    const highlightedGhiChu = highlightText(ghiChu, keywords);
+                    
+                    resultsHTML += `
+                        <div class="result-card">
+                            <div class="card-header">
+                                <div class="stt-container">
+                                    <div class="stt-label">STT</div>
+                                    <div class="stt-value">${item.STT || (index + 1)}</div>
+                                </div>
+                                <div class="khachhang-container">
+                                    <div class="khachhang-label">Khách hàng</div>
+                                    <div class="khachhang-value">${highlightedKhachHang}</div>
+                                </div>
+                            </div>
+                            <div class="details">
+                                <div class="detail-item">
+                                    <div class="detail-label">Khuôn dao</div>
+                                    <div class="detail-value">${highlightedKhuonDao}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Giá dao</div>
+                                    <div class="detail-value price-value">${formatPrice(giaDao)}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Tầng</div>
+                                    <div class="detail-value">${tang}</div>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <div class="detail-label">Ghi chú</div>
+                                    <div class="detail-value ghichu-value">${highlightedGhiChu}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                resultsHTML += `</div></div>`;
+                resultsContainer.innerHTML = resultsHTML;
+                resultsSection.appendChild(resultsContainer);
+            } else {
+                resultsSection.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <h3>Không tìm thấy kết quả</h3>
+                        <p>Không tìm thấy kết quả nào cho từ khóa đã nhập.<br>Vui lòng thử với từ khóa khác.</p>
+                    </div>
+                `;
+            }
         }
         
-        // Sự kiện khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tải dữ liệu ban đầu
-            loadData();
+        // Hàm định dạng giá tiền
+        function formatPrice(price) {
+            if (!price) return 'Chưa có thông tin';
+        }
+        
+        // Hàm khởi tạo
+        async function init() {
+            // Tải dữ liệu từ Google Sheet
+            await loadSheetData();
             
-            // Thêm sự kiện tìm kiếm
-            searchInput.addEventListener('input', realtimeSearch);
-            searchBtn.addEventListener('click', searchData);
+            // Thêm sự kiện cho nút tìm kiếm
+            document.getElementById('searchButton').addEventListener('click', handleSearch);
             
-            // Cho phép tìm kiếm bằng phím Enter
-            searchInput.addEventListener('keypress', function(e) {
+            // Thêm sự kiện cho phím Enter
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
-                    searchData();
+                    handleSearch();
                 }
             });
-        });
+        }
+        
+        // Hàm xử lý tìm kiếm
+        function handleSearch() {
+            const searchText = document.getElementById('searchInput').value;
+            if (searchText.trim()) {
+                const searchResults = searchData(searchText);
+                displayResults(searchResults);
+            } else {
+                // Nếu không có từ khóa, hiển thị thông báo sẵn sàng
+                showReadyMessage();
+            }
+        }
+        
+        // Khởi chạy ứng dụng khi trang tải xong
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
