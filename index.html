@@ -481,7 +481,7 @@
             <header>
                 <div class="logo">🔍</div>
                 <h1>Công cụ tìm kiếm khuôn dao</h1>
-                <div class="subtitle">Tìm khuôn dao theo thông tin có sẵn</div>
+                <div class="subtitle">Tìm kiếm thông tin khuôn dao theo tên khách hàng, tên khuôn dao, ghi chú</div>
                 <div class="author">Made by SAM</div>
             </header>
             
@@ -507,13 +507,11 @@
     </div>
 
     <script>
-        // URL của Google Sheet CSV
+        // URL của Google Sheet CSV (đã được sửa)
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTirzkQ-KBQblCZgb9Jk4rop75HJ5cBwRi30kg_L_DpLIpxOb_XHZEk_bAO92RYtg/pub?output=csv';
         
-        // Biến lưu trữ dữ liệu từ Google Sheet
         let sheetData = [];
         
-        // Hàm tải dữ liệu từ Google Sheet CSV
         async function loadSheetData() {
             try {
                 showLoading('Đang tải dữ liệu từ Google Sheets...');
@@ -525,7 +523,7 @@
                 
                 const csvText = await response.text();
                 
-                // Chuyển đổi CSV thành mảng đối tượng, bỏ qua 2 dòng đầu
+                // Chuyển đổi CSV thành mảng đối tượng
                 sheetData = parseCSV(csvText);
                 console.log('Dữ liệu đã tải:', sheetData);
                 
@@ -541,51 +539,80 @@
             }
         }
         
-        // Hàm phân tích CSV, bỏ qua 2 dòng đầu
-        function parseCSV(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim());
-            const result = [];
-            
-            if (lines.length <= 2) return result; // Bỏ qua nếu có ít hơn 3 dòng
-            
-            // Lấy tiêu đề cột từ dòng thứ 3 (index 2) và xử lý BOM
-            const headers = lines[2].split(',').map(header => 
-                header.trim().replace(/^\uFEFF/, '') // Loại bỏ BOM nếu có
-            );
-            
-            console.log('Headers:', headers); // Debug để xem tên cột
-            
-            // Xử lý từng dòng dữ liệu bắt đầu từ dòng thứ 4 (index 3)
-            for (let i = 3; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-                
-                const obj = {};
-                const values = parseCSVLine(line);
-                
-                // Gán giá trị theo index cột (B=1, C=2, D=3, E=4, F=5 trong Excel)
-                // Tuy nhiên, chúng ta đang xử lý theo tên cột từ header
-                
-                // Map theo tên cột đã xác định từ header
-                headers.forEach((header, index) => {
-                    // Chỉ lấy các cột cần thiết
-                    const colIndex = index + 1; // Excel index (1-based)
-                    if (colIndex >= 2 && colIndex <= 6) { // Chỉ lấy cột B đến F
-                        obj[header] = (values[index] || '').trim();
-                    }
-                });
-                
-                // Thêm STT tự động
-                obj.STT = (i - 2).toString();
-                
-                // Chỉ thêm vào kết quả nếu có dữ liệu
-                if (Object.values(obj).some(value => value && value !== '')) {
-                    result.push(obj);
+// Hàm phân tích CSV - SỬA LẠI HOÀN TOÀN ĐỂ PHÙ HỢP VỚI CẤU TRÚC THỰC TẾ
+function parseCSV(csvText) {
+    console.log("Bắt đầu phân tích CSV...");
+    const lines = csvText.split('\n').filter(line => line.trim() !== '');
+    const result = [];
+    
+    if (lines.length < 2) {
+        console.warn('CSV có ít hơn 2 dòng, không có dữ liệu.');
+        return result;
+    }
+    
+    // Dòng 1: Tiêu đề cột
+    const headers = lines[0].split(',').map(header => 
+        header.trim().replace(/^\uFEFF/, '')
+    );
+    
+    console.log('Tiêu đề cột gốc:', headers);
+    console.log('Số lượng cột:', headers.length);
+    
+    // Tìm vị trí các cột cần thiết (không phân biệt hoa thường)
+    const findColumnIndex = (keywords) => {
+        for (let i = 0; i < headers.length; i++) {
+            const header = headers[i].toLowerCase();
+            for (const keyword of keywords) {
+                if (header.includes(keyword)) {
+                    console.log(`Tìm thấy cột "${headers[i]}" tại vị trí ${i} cho từ khóa "${keyword}"`);
+                    return i;
                 }
             }
-            
-            return result;
         }
+        console.warn(`Không tìm thấy cột cho từ khóa: ${keywords}`);
+        return -1;
+    };
+    
+    // Xác định vị trí các cột với nhiều từ khóa có thể
+    const customerIndex = findColumnIndex(['khách hàng', 'customer', 'tên khách']);
+    const productIndex = findColumnIndex(['khuôn dao', 'tên khuôn', 'product', 'mold']);
+    const priceIndex = findColumnIndex(['giá dao', 'giá', 'price', 'cost']);
+    const floorIndex = findColumnIndex(['tầng', 'floor', 'level']);
+    const noteIndex = findColumnIndex(['ghi chú', 'note', 'comment', 'mô tả']);
+    
+    console.log('Vị trí cột đã xác định:', {
+        customerIndex, productIndex, priceIndex, floorIndex, noteIndex
+    });
+    
+    // Xử lý từng dòng dữ liệu (bắt đầu từ dòng 2)
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line || line.startsWith(',')) continue; // Bỏ qua dòng trống hoặc chỉ có dấu phẩy
+        
+        const values = parseCSVLine(line);
+        
+        // Tạo object dữ liệu
+        const obj = {
+            'STT': i.toString(),
+            'Tên khách hàng': customerIndex !== -1 ? (values[customerIndex] || '').trim() : '',
+            'Tên khuôn dao': productIndex !== -1 ? (values[productIndex] || '').trim() : '',
+            'Giá dao': priceIndex !== -1 ? (values[priceIndex] || '').trim() : '',
+            'Tầng': floorIndex !== -1 ? (values[floorIndex] || '').trim() : '',
+            'Ghi chú': noteIndex !== -1 ? (values[noteIndex] || '').trim() : ''
+        };
+        
+        // Kiểm tra xem dòng này có dữ liệu thật không (ít nhất một trường không rỗng)
+        const hasData = obj['Tên khách hàng'] || obj['Tên khuôn dao'] || obj['Ghi chú'];
+        
+        if (hasData) {
+            result.push(obj);
+            console.log(`Đã thêm dòng ${i}:`, obj);
+        }
+    }
+    
+    console.log(`Phân tích CSV hoàn tất. Tổng số bản ghi: ${result.length}`);
+    return result;
+    }
         
         // Hàm phân tích dòng CSV, xử lý trường hợp có dấu phẩy trong giá trị
         function parseCSVLine(line) {
@@ -607,7 +634,7 @@
             }
             
             result.push(current);
-            return result.map(value => value.replace(/^"|"$/g, '').trim()); // Loại bỏ dấu ngoặc kép
+            return result.map(value => value.replace(/^"|"$/g, '').trim());
         }
         
         // Hàm highlight từ khóa trong nội dung (không phân biệt hoa thường)
@@ -638,7 +665,6 @@
         
         // Hàm ẩn loading
         function hideLoading() {
-            // Chỉ ẩn nếu đang hiển thị loading
             const resultsSection = document.getElementById('resultsSection');
             if (resultsSection.querySelector('.loading')) {
                 resultsSection.innerHTML = '';
@@ -667,7 +693,7 @@
         // Hàm tìm kiếm trong dữ liệu (không phân biệt hoa thường)
         function searchData(searchText) {
             if (!searchText.trim()) {
-                return [];
+                return { results: [], keywords: [] };
             }
             
             // Tách các từ khóa từ input
@@ -675,7 +701,7 @@
                 .map(keyword => keyword.trim())
                 .filter(keyword => keyword);
             
-            if (keywords.length === 0) return [];
+            if (keywords.length === 0) return { results: [], keywords: [] };
             
             // Tìm kiếm các bản ghi chứa ít nhất một từ khóa trong các trường cần thiết
             const results = sheetData.filter(row => {
@@ -810,6 +836,13 @@
         // Hàm định dạng giá tiền
         function formatPrice(price) {
             if (!price) return 'Chưa có thông tin';
+            
+            // Thử chuyển đổi sang số
+            const num = parseFloat(price.replace(/[^\d.-]/g, ''));
+            if (isNaN(num)) return price;
+            
+            // Định dạng số với dấu phân cách hàng nghìn
+            return num.toLocaleString('vi-VN') + ' VND';
         }
         
         // Hàm khởi tạo
@@ -845,4 +878,3 @@
     </script>
 </body>
 </html>
-
