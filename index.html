@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công cụ tìm kiếm dao bế</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .search-section {
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        #searchInput {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
+        #searchBtn {
+            padding: 15px 25px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        #searchBtn:hover {
+            background-color: #2980b9;
+        }
+        
+        .search-info {
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+        
+        .data-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+        }
+        
+        #resultCount {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        th:last-child {
+            border-right: none;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        td {
+            padding: 15px;
+            border-right: 1px solid #eee;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        
+        td:last-child {
+            border-right: none;
+        }
+        
+        .customer-group {
+            background-color: #f8f9fa;
+            border-top: 2px solid #3498db;
+        }
+        
+        .customer-group td {
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: #e8f4fc;
+        }
+        
+        .spacer-row td {
+            height: 10px;
+            background-color: #f5f5f5;
+            padding: 0;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: var(--secondary-color);
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .customer-name {
+            font-weight: 600;
+        }
+        
+        .mold-name {
+            font-weight: 500;
+        }
+        
+        .price {
+            font-weight: 500;
+        }
+        
+        .floor {
+            font-weight: 500;
+        }
+        
+        .note {
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .search-section, .data-section {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-search"></i> Công cụ tìm kiếm Dao Bế</h1>
+        </header>
+        
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Nhập tên khách hàng hoặc tên khuôn dao...">
+                <button id="searchBtn"><i class="fas fa-search"></i> Tìm kiếm</button>
+            </div>
+            <div class="search-info">
+                Thử gõ tên dao bạn đang cần tìm
+            </div>
+        </section>
+        
+        <section class="data-section">
+            <div class="section-header">
+                <h2><i class="fas fa-list"></i> Kết quả tìm kiếm</h2>
+                <div id="resultCount">Đang tải...</div>
+            </div>
+            
+            <div class="loading" id="loadingIndicator">
+                <i class="fas fa-spinner"></i>
+                <p>Đang tải dữ liệu...</p>
+            </div>
+            
+            <div class="table-container">
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th width="20%">Tên khách hàng</th>
+                            <th width="25%">Tên khuôn dao</th>
+                            <th width="10%">Giá dao</th>
+                            <th width="10%">Tầng</th>
+                            <th width="30%">Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Dữ liệu sẽ được thêm vào đây -->
+                    </tbody>
+                </table>
+                <div class="no-results" id="noResults">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <h3>Không tìm thấy kết quả nào</h3>
+                    <p>Hãy thử tìm kiếm với từ khóa khác</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Công cụ tìm kiếm Dao Bế | Dữ liệu đồng bộ từ Google Sheets</p>
+        </footer>
+    </div>
+
+    <script>
+        // Biến lưu trữ dữ liệu gốc
+        let allData = [];
+        
+        // DOM Elements
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const tableBody = document.getElementById('tableBody');
+        const resultCount = document.getElementById('resultCount');
+        const noResults = document.getElementById('noResults');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        
+        // Hàm tải dữ liệu từ Google Sheets
+        async function loadData() {
+            try {
+                loadingIndicator.style.display = 'block';
+                tableBody.innerHTML = '';
+                
+                // Thử cả 2 cách để lấy dữ liệu
+                // Cách 1: Sử dụng Google Sheets API qua JSON
+                // Từ link: https://docs.google.com/spreadsheets/d/1hCRv77JoHZI7x7eDjFFkW215s94oWx9z/edit
+                // Chuyển thành JSON: https://docs.google.com/spreadsheets/d/1hCRv77JoHZI7x7eDjFFkW215s94oWx9z/gviz/tq?tqx=out:json
+                
+                const sheetId = '1hCRv77JoHZI7x7eDjFFkW215s94oWx9z';
+                const gid = '1135434967';
+                const jsonUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
+                
+                console.log('Đang tải dữ liệu từ:', jsonUrl);
+                
+                const response = await fetch(jsonUrl);
+                const text = await response.text();
+                
+                // Xử lý dữ liệu JSON từ Google Sheets
+                const jsonData = JSON.parse(text.substring(47, text.length - 2));
+                console.log('Dữ liệu JSON từ Google Sheets:', jsonData);
+                
+                // Lấy dữ liệu từ JSON
+                const rows = jsonData.table.rows;
+                
+                // Lưu dữ liệu vào mảng - lấy cột B, C, D, E, F
+                allData = [];
+                
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.c;
+                    
+                    // Kiểm tra xem có đủ dữ liệu không
+                    if (cells && cells.length >= 6) {
+                        const customerName = cells[1] ? (cells[1].v || '') : '';
+                        const moldName = cells[2] ? (cells[2].v || '') : '';
+                        const price = cells[3] ? (cells[3].v || '') : '';
+                        const floor = cells[4] ? (cells[4].v || '') : '';
+                        const note = cells[5] ? (cells[5].v || '') : '';
+                        
+                        // Chỉ thêm nếu có dữ liệu
+                        if (customerName || moldName || price || floor || note) {
+                            allData.push({
+                                customerName: customerName.toString(),
+                                moldName: moldName.toString(),
+                                price: price.toString(),
+                                floor: floor.toString(),
+                                note: note.toString()
+                            });
+                        }
+                    }
+                }
+                
+                // Ẩn loading và hiển thị dữ liệu
+                loadingIndicator.style.display = 'none';
+                displayData(allData);
+                
+                console.log(`Đã tải ${allData.length} bản ghi`);
+                
+            } catch (error) {
+                console.error('Lỗi khi tải dữ liệu:', error);
+        }
+        
+        // Hàm highlight từ khóa tìm kiếm trong văn bản
+        function highlightText(text, keyword) {
+            if (!keyword.trim() || !text) return text;
+            
+            const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedKeyword})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+        
+        // Hàm hiển thị dữ liệu với nhóm khách hàng
+        function displayData(data) {
+            tableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                noResults.style.display = 'block';
+                resultCount.textContent = '0 kết quả';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            resultCount.textContent = `${data.length} kết quả`;
+            
+            const searchKeyword = searchInput.value.trim();
+            let lastCustomer = null;
+            
+            // Sắp xếp dữ liệu theo tên khách hàng để nhóm lại
+            const sortedData = [...data].sort((a, b) => {
+                if (a.customerName < b.customerName) return -1;
+                if (a.customerName > b.customerName) return 1;
+                return 0;
+            });
+            
+            sortedData.forEach((item, index) => {
+                // Kiểm tra nếu khách hàng thay đổi thì thêm dòng phân cách
+                if (lastCustomer !== null && item.customerName !== lastCustomer) {
+                    // Thêm dòng trống để phân cách giữa các khách hàng
+                    const spacerRow = document.createElement('tr');
+                    spacerRow.className = 'spacer-row';
+                    spacerRow.innerHTML = `<td colspan="5"></td>`;
+                    tableBody.appendChild(spacerRow);
+                }
+                
+                // Nếu là khách hàng mới, thêm dòng nhóm
+                if (item.customerName !== lastCustomer) {
+                    lastCustomer = item.customerName;
+                    
+                    const groupRow = document.createElement('tr');
+                    groupRow.className = 'customer-group';
+                    
+                    // Highlight tên khách hàng nếu có từ khóa tìm kiếm
+                    const customerNameHTML = searchKeyword ? 
+                        highlightText(lastCustomer, searchKeyword) : 
+                        lastCustomer;
+                    
+                    groupRow.innerHTML = `
+                        <td colspan="5">
+                            <i class="fas fa-user" style="margin-right: 8px;"></i>
+                            ${customerNameHTML || 'Khách hàng không tên'}
+                        </td>
+                    `;
+                    tableBody.appendChild(groupRow);
+                }
+                
+                // Thêm dòng dữ liệu
+                const row = document.createElement('tr');
+                
+                // Tạo nội dung - chỉ highlight trong cột tìm kiếm
+                const customerNameHTML = item.customerName || '';
+                
+                // Highlight tên khuôn dao nếu có từ khóa
+                const moldNameHTML = searchKeyword ? 
+                    highlightText(item.moldName, searchKeyword) : 
+                    item.moldName;
+                
+                const priceHTML = item.price || '';
+                const floorHTML = item.floor || '';
+                const noteHTML = item.note || '';
+                
+                row.innerHTML = `
+                    <td><div class="customer-name">${customerNameHTML}</div></td>
+                    <td><div class="mold-name">${moldNameHTML}</div></td>
+                    <td><div class="price">${priceHTML}</div></td>
+                    <td><span class="floor">${floorHTML}</span></td>
+                    <td><div class="note">${noteHTML}</div></td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Hàm tìm kiếm
+        function searchData() {
+            const keyword = searchInput.value.trim().toLowerCase();
+            
+            if (!keyword) {
+                // Nếu không có từ khóa, hiển thị tất cả dữ liệu
+                displayData(allData);
+                return;
+            }
+            
+            // Tìm kiếm không phân biệt chữ hoa/thường
+            const filteredData = allData.filter(item => {
+                return (
+                    (item.customerName && item.customerName.toLowerCase().includes(keyword)) ||
+                    (item.moldName && item.moldName.toLowerCase().includes(keyword))
+                );
+            });
+            
+            displayData(filteredData);
+        }
+        
+        // Hàm tìm kiếm theo thời gian thực
+        function realtimeSearch() {
+            // Đợi một chút để tránh tìm kiếm quá nhiều lần
+            clearTimeout(window.searchTimeout);
+            window.searchTimeout = setTimeout(searchData, 300);
+        }
+        
+        // Sự kiện khi trang được tải
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tải dữ liệu ban đầu
+            loadData();
+            
+            // Thêm sự kiện tìm kiếm
+            searchInput.addEventListener('input', realtimeSearch);
+            searchBtn.addEventListener('click', searchData);
+            
+            // Cho phép tìm kiếm bằng phím Enter
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchData();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
