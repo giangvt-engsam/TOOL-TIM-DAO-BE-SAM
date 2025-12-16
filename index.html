@@ -3,35 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Công cụ tìm kiếm khuôn dao</title>
+    <title>Tool Tìm Kiếm Khuôn Dao</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-        
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --background: #f8fafc;
-            --surface: #ffffff;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --radius: 12px;
-            --highlight: #fff9c4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--text);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
@@ -43,52 +27,40 @@
         }
         
         .app-card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             margin-bottom: 20px;
         }
         
         header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
             padding: 30px;
             text-align: center;
-            position: relative;
-        }
-        
-        .logo {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
         }
         
         h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
             font-weight: 700;
-            margin-bottom: 8px;
         }
         
         .subtitle {
             font-size: 1.1rem;
             opacity: 0.9;
-            font-weight: 400;
             margin-bottom: 5px;
-        }
-        
-        .author {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            font-style: italic;
         }
         
         .search-section {
             padding: 30px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #eaeaea;
+            background: #f8f9fa;
         }
         
         .search-container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
         }
         
@@ -101,273 +73,113 @@
         input[type="text"] {
             flex: 1;
             padding: 16px 20px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
-            transition: all 0.3s ease;
-            background: var(--background);
+            transition: all 0.3s;
+            background: white;
         }
         
         input[type="text"]:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
         
         button {
-            background: var(--primary);
+            background: #3498db;
             color: white;
             border: none;
             padding: 16px 28px;
-            border-radius: var(--radius);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             white-space: nowrap;
         }
         
         button:hover {
-            background: var(--primary-dark);
+            background: #2980b9;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
         }
         
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .suggestion {
-            color: var(--text-light);
+        .search-instruction {
+            color: #7f8c8d;
             font-size: 14px;
             text-align: center;
-        }
-        
-        .code-number {
-            font-weight: 600;
-            color: var(--primary);
-            background: rgba(37, 99, 235, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .code-number:hover {
-            background: rgba(37, 99, 235, 0.2);
         }
         
         .results-section {
             padding: 0;
         }
         
-        .summary-card {
-            background: linear-gradient(135deg, #dbeafe, #e0f2fe);
-            padding: 24px;
-            margin: 0;
-            border-radius: 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .summary-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        
-        .summary-item {
-            background: white;
-            padding: 16px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .summary-code {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.1rem;
-            margin-bottom: 4px;
-        }
-        
-        .summary-count {
-            color: var(--success);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .results-container {
-            padding: 24px;
-        }
-        
-        .result-group {
-            margin-bottom: 32px;
-        }
-        
-        .result-header {
+        .results-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--border);
+            padding: 20px 30px;
+            border-bottom: 2px solid #3498db;
+            background: #f8f9fa;
         }
         
-        .result-title {
+        .results-header h2 {
             font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
+            color: #2c3e50;
         }
         
         .result-count {
-            background: var(--primary);
+            background: #3498db;
             color: white;
             padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 14px;
             font-weight: 600;
         }
         
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
+        .results-container {
+            padding: 20px 30px;
         }
         
-        .result-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-            transition: all 0.3s ease;
-            cursor: pointer;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
         
-        .result-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-            border-color: var(--primary);
+        thead {
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
         }
         
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .stt-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        
-        .stt-label {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-        
-        .stt-value {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.1rem;
-        }
-        
-        .khachhang-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            text-align: right;
-        }
-        
-        .khachhang-label {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-        
-        .khachhang-value {
+        th {
+            padding: 15px 12px;
+            text-align: left;
             font-weight: 600;
-            color: var(--text);
-            font-size: 0.95rem;
+            font-size: 15px;
         }
         
-        .content {
-            margin-bottom: 20px;
-            line-height: 1.5;
-            padding: 12px;
-            background: var(--background);
-            border-radius: 8px;
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
         }
         
-        .highlight {
-            background-color: var(--highlight);
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: 600;
+        tbody tr:hover {
+            background-color: #f8f9fa;
         }
         
-        .details {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-        
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        
-        .detail-item.full-width {
-            grid-column: 1 / -1;
-        }
-        
-        .detail-label {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .detail-value {
-            font-weight: 600;
-            color: var(--text);
-            padding: 8px 12px;
-            background: var(--background);
-            border-radius: 6px;
-            border-left: 3px solid var(--primary);
-        }
-        
-        .price-value {
-            color: var(--success);
-            border-left-color: var(--success);
-            font-weight: 700;
-        }
-        
-        .ghichu-value {
-            font-style: italic;
-            color: var(--warning);
-            border-left-color: var(--warning);
+        td {
+            padding: 15px 12px;
+            font-size: 15px;
         }
         
         .no-results {
             text-align: center;
             padding: 60px 20px;
-            color: var(--text-light);
+            color: #7f8c8d;
         }
         
         .no-results-icon {
@@ -376,23 +188,17 @@
             opacity: 0.5;
         }
         
-        .no-results h3 {
-            font-size: 1.5rem;
-            margin-bottom: 12px;
-            color: var(--text);
-        }
-        
         .loading {
             text-align: center;
             padding: 60px 20px;
-            color: var(--text-light);
+            color: #3498db;
         }
         
         .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
+            border: 4px solid #eaeaea;
+            border-top: 4px solid #3498db;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
@@ -403,25 +209,104 @@
             100% { transform: rotate(360deg); }
         }
         
-        .error {
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 20px;
-            border-radius: var(--radius);
-            border-left: 4px solid #dc2626;
-            margin: 20px;
-        }
-        
         .ready-message {
             text-align: center;
-            padding: 40px 20px;
-            color: var(--text-light);
+            padding: 60px 20px;
+            color: #27ae60;
         }
         
         .ready-icon {
             font-size: 3rem;
             margin-bottom: 16px;
-            color: var(--success);
+        }
+        
+        .error {
+            background: #ffeaea;
+            color: #d32f2f;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #d32f2f;
+            margin: 20px 30px;
+            text-align: center;
+        }
+        
+        .data-source {
+            margin-top: 20px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .highlight {
+            background-color: #fff9c4;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .customer-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .canon-badge {
+            background-color: #e8f4fc;
+            color: #2980b9;
+        }
+        
+        .eva-badge {
+            background-color: #f9f4e6;
+            color: #f39c12;
+        }
+        
+        .sjtech-badge {
+            background-color: #e8f6ef;
+            color: #27ae60;
+        }
+        
+        .amtex-badge {
+            background-color: #f4ecf7;
+            color: #8e44ad;
+        }
+        
+        .sunplus-badge {
+            background-color: #fff5e6;
+            color: #e67e22;
+        }
+        
+        .rhythm-badge {
+            background-color: #e8f8f5;
+            color: #16a085;
+        }
+        
+        .enshsanko-badge {
+            background-color: #fef9e7;
+            color: #d35400;
+        }
+        
+        .inoac-badge {
+            background-color: #eaf2f8;
+            color: #2c3e50;
+        }
+        
+        .alden-badge {
+            background-color: #fdedec;
+            color: #c0392b;
+        }
+        
+        .iris-badge {
+            background-color: #f4f6f6;
+            color: #7f8c8d;
+        }
+        
+        .khachung-badge {
+            background-color: #e8f6f3;
+            color: #1abc9c;
         }
         
         @media (max-width: 768px) {
@@ -429,48 +314,19 @@
                 flex-direction: column;
             }
             
-            .results-grid {
-                grid-template-columns: 1fr;
+            table {
+                display: block;
+                overflow-x: auto;
             }
             
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            header {
+            header, .search-section, .results-container {
                 padding: 20px;
             }
             
-            h1 {
-                font-size: 1.75rem;
-            }
-            
-            .details {
-                grid-template-columns: 1fr;
-            }
-            
-            .detail-item.full-width {
-                grid-column: 1;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .search-section, .results-container {
-                padding: 20px;
-            }
-            
-            .card-header {
+            .results-header {
                 flex-direction: column;
-                gap: 12px;
+                gap: 10px;
                 align-items: flex-start;
-            }
-            
-            .khachhang-container {
-                text-align: left;
             }
         }
     </style>
@@ -479,20 +335,18 @@
     <div class="container">
         <div class="app-card">
             <header>
-                <div class="logo">🔍</div>
-                <h1>Công cụ tìm kiếm khuôn dao</h1>
-                <div class="subtitle">Tìm kiếm thông tin khuôn dao theo tên khách hàng, tên khuôn dao, ghi chú</div>
-                <div class="author">Made by SAM</div>
+                <h1>🔍 Tool Tìm Kiếm Khuôn Dao</h1>
+                <div class="subtitle">Tra cứu vị trí khuôn dao nhanh</div>
             </header>
             
             <div class="search-section">
                 <div class="search-container">
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Nhập từ khóa tìm kiếm (tên khách hàng, tên khuôn dao, ghi chú)">
+                        <input type="text" id="searchInput" placeholder="Nhập tên từ khóa gợi ý">
                         <button id="searchButton">Tìm Kiếm</button>
                     </div>
-                    <div class="suggestion">
-                        <strong>Gợi ý:</strong> Thử tìm kiếm bằng từ khóa chung hoặc tên cụ thể
+                    <div class="search-instruction">
+                        Nhập từ khóa tìm kiếm vào ô trên.
                     </div>
                 </div>
             </div>
@@ -503,118 +357,149 @@
                     <p>Đang tải dữ liệu từ Google Sheets...</p>
                 </div>
             </div>
+            
+            <div class="data-source" id="dataSource">
+                Nguồn dữ liệu: Google Sheets
+            </div>
         </div>
     </div>
 
     <script>
-        // URL của Google Sheet CSV (đã được sửa)
+        // URL của file CSV từ Google Sheets
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTirzkQ-KBQblCZgb9Jk4rop75HJ5cBwRi30kg_L_DpLIpxOb_XHZEk_bAO92RYtg/pub?output=csv';
         
+        // Biến lưu trữ dữ liệu
         let sheetData = [];
         
+        // Hàm tải dữ liệu từ Google Sheets
         async function loadSheetData() {
             try {
                 showLoading('Đang tải dữ liệu từ Google Sheets...');
                 
-                const response = await fetch(CSV_URL);
+                console.log('Bắt đầu tải dữ liệu từ URL:', CSV_URL);
+                
+                // Thêm timestamp để tránh cache
+                const urlWithTimestamp = `${CSV_URL}&t=${Date.now()}`;
+                
+                const response = await fetch(urlWithTimestamp, {
+                    headers: {
+                        'Accept': 'text/csv',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                
+                console.log('Response status:', response.status, response.statusText);
+                
                 if (!response.ok) {
-                    throw new Error(`Lỗi HTTP: ${response.status}`);
+                    throw new Error(`Lỗi HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const csvText = await response.text();
+                console.log('Dữ liệu CSV đã tải thành công, kích thước:', csvText.length, 'bytes');
                 
-                // Chuyển đổi CSV thành mảng đối tượng
-                sheetData = parseCSV(csvText);
-                console.log('Dữ liệu đã tải:', sheetData);
+                // Parse dữ liệu CSV
+                const parsedData = parseCSV(csvText);
                 
-                // Ẩn trạng thái loading
+                if (parsedData.length === 0) {
+                    throw new Error('Không tìm thấy dữ liệu hợp lệ trong file CSV');
+                }
+                
+                sheetData = parsedData;
+                console.log('Đã parse thành công', sheetData.length, 'bản ghi từ Google Sheets');
+                
+                // Ẩn loading
                 hideLoading();
                 
                 // Hiển thị thông báo sẵn sàng
                 showReadyMessage();
                 
+                // Cập nhật nguồn dữ liệu
+                document.getElementById('dataSource').textContent = `Nguồn dữ liệu: Google Sheets (${sheetData.length} bản ghi)`;
+                
             } catch (error) {
-                console.error('Lỗi khi tải dữ liệu:', error);
-                showError('Không thể tải dữ liệu từ Google Sheet. Vui lòng kiểm tra kết nối internet và thử lại.');
+                console.error('Lỗi chi tiết khi tải dữ liệu:', error);
+                
+                // Hiển thị thông báo lỗi
+                showError(`
+                    <strong>Không thể tải dữ liệu từ Google Sheets</strong><br><br>
+                    Lỗi: ${error.message}<br><br>
+                    Vui lòng kiểm tra:<br>
+                    1. Link CSV có đúng không<br>
+                    2. File Google Sheets đã publish chưa<br>
+                    3. Mở Console (F12) để xem lỗi chi tiết
+                `);
             }
         }
         
-// Hàm phân tích CSV - SỬA LẠI HOÀN TOÀN ĐỂ PHÙ HỢP VỚI CẤU TRÚC THỰC TẾ
-function parseCSV(csvText) {
-    console.log("Bắt đầu phân tích CSV...");
-    const lines = csvText.split('\n').filter(line => line.trim() !== '');
-    const result = [];
-    
-    if (lines.length < 2) {
-        console.warn('CSV có ít hơn 2 dòng, không có dữ liệu.');
-        return result;
-    }
-    
-    // Dòng 1: Tiêu đề cột
-    const headers = lines[0].split(',').map(header => 
-        header.trim().replace(/^\uFEFF/, '')
-    );
-    
-    console.log('Tiêu đề cột gốc:', headers);
-    console.log('Số lượng cột:', headers.length);
-    
-    // Tìm vị trí các cột cần thiết (không phân biệt hoa thường)
-    const findColumnIndex = (keywords) => {
-        for (let i = 0; i < headers.length; i++) {
-            const header = headers[i].toLowerCase();
-            for (const keyword of keywords) {
-                if (header.includes(keyword)) {
-                    console.log(`Tìm thấy cột "${headers[i]}" tại vị trí ${i} cho từ khóa "${keyword}"`);
-                    return i;
+        // Hàm parse CSV - lấy dữ liệu từ dòng 3
+        function parseCSV(csvText) {
+            const result = [];
+            
+            if (!csvText || csvText.trim() === '') {
+                console.error('CSV text rỗng');
+                return result;
+            }
+            
+            // Tách dòng
+            const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
+            
+            console.log(`Tổng số dòng trong CSV: ${lines.length}`);
+            
+            if (lines.length < 3) {
+                console.error('CSV không đủ 3 dòng dữ liệu');
+                return result;
+            }
+            
+            // BẮT ĐẦU TỪ DÒNG 3 (index 2)
+            const startRow = 2; // Dòng thứ 3 trong file
+            
+            console.log(`Bắt đầu parse từ dòng ${startRow + 1} (dòng thứ 3 trong file)`);
+            
+            // Parse từng dòng dữ liệu từ dòng 3 trở đi
+            for (let i = startRow; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                // Phân tích dòng CSV
+                const columns = parseCSVLine(line);
+                
+                // Cột B-F theo yêu cầu: 
+                // columns[0] = cột A (bỏ qua)
+                // columns[1] = cột B: Tên khách hàng
+                // columns[2] = cột C: Tên khuôn dao
+                // columns[3] = cột D: Giá dao (số giá sắt)
+                // columns[4] = cột E: Tầng
+                // columns[5] = cột F: Ghi chú
+                
+                if (columns.length >= 6) { // Phải có đủ 6 cột A-F
+                    const record = {
+                        customer: cleanValue(columns[1]),     // Cột B: Tên khách hàng
+                        knifeName: cleanValue(columns[2]),    // Cột C: Tên khuôn dao
+                        price: cleanValue(columns[3]),        // Cột D: Số giá sắt
+                        floor: cleanValue(columns[4]),        // Cột E: Tầng
+                        note: cleanValue(columns[5])          // Cột F: Ghi chú
+                    };
+                    
+                    // Kiểm tra xem có phải là dòng dữ liệu hợp lệ không
+                    // Bỏ qua dòng tiêu đề (nếu có)
+                    const isHeader = record.customer.toLowerCase().includes('khách') ||
+                                    record.knifeName.toLowerCase().includes('tên') ||
+                                    record.customer.toLowerCase().includes('tên');
+                    
+                    const hasData = record.customer || record.knifeName;
+                    
+                    if (!isHeader && hasData) {
+                        result.push(record);
+                    }
                 }
             }
+            
+            console.log(`Đã parse được ${result.length} bản ghi hợp lệ`);
+            console.log('5 bản ghi đầu tiên:', result.slice(0, 5));
+            return result;
         }
-        console.warn(`Không tìm thấy cột cho từ khóa: ${keywords}`);
-        return -1;
-    };
-    
-    // Xác định vị trí các cột với nhiều từ khóa có thể
-    const customerIndex = findColumnIndex(['khách hàng', 'customer', 'tên khách']);
-    const productIndex = findColumnIndex(['khuôn dao', 'tên khuôn', 'product', 'mold']);
-    const priceIndex = findColumnIndex(['giá dao', 'giá', 'price', 'cost']);
-    const floorIndex = findColumnIndex(['tầng', 'floor', 'level']);
-    const noteIndex = findColumnIndex(['ghi chú', 'note', 'comment', 'mô tả']);
-    
-    console.log('Vị trí cột đã xác định:', {
-        customerIndex, productIndex, priceIndex, floorIndex, noteIndex
-    });
-    
-    // Xử lý từng dòng dữ liệu (bắt đầu từ dòng 2)
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line || line.startsWith(',')) continue; // Bỏ qua dòng trống hoặc chỉ có dấu phẩy
         
-        const values = parseCSVLine(line);
-        
-        // Tạo object dữ liệu
-        const obj = {
-            'STT': i.toString(),
-            'Tên khách hàng': customerIndex !== -1 ? (values[customerIndex] || '').trim() : '',
-            'Tên khuôn dao': productIndex !== -1 ? (values[productIndex] || '').trim() : '',
-            'Giá dao': priceIndex !== -1 ? (values[priceIndex] || '').trim() : '',
-            'Tầng': floorIndex !== -1 ? (values[floorIndex] || '').trim() : '',
-            'Ghi chú': noteIndex !== -1 ? (values[noteIndex] || '').trim() : ''
-        };
-        
-        // Kiểm tra xem dòng này có dữ liệu thật không (ít nhất một trường không rỗng)
-        const hasData = obj['Tên khách hàng'] || obj['Tên khuôn dao'] || obj['Ghi chú'];
-        
-        if (hasData) {
-            result.push(obj);
-            console.log(`Đã thêm dòng ${i}:`, obj);
-        }
-    }
-    
-    console.log(`Phân tích CSV hoàn tất. Tổng số bản ghi: ${result.length}`);
-    return result;
-    }
-        
-        // Hàm phân tích dòng CSV, xử lý trường hợp có dấu phẩy trong giá trị
+        // Hàm parse dòng CSV đơn giản
         function parseCSVLine(line) {
             const result = [];
             let current = '';
@@ -624,7 +509,12 @@ function parseCSV(csvText) {
                 const char = line[i];
                 
                 if (char === '"') {
-                    inQuotes = !inQuotes;
+                    if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
                 } else if (char === ',' && !inQuotes) {
                     result.push(current);
                     current = '';
@@ -634,22 +524,38 @@ function parseCSV(csvText) {
             }
             
             result.push(current);
-            return result.map(value => value.replace(/^"|"$/g, '').trim());
+            return result;
         }
         
-        // Hàm highlight từ khóa trong nội dung (không phân biệt hoa thường)
-        function highlightText(content, keywords) {
-            if (!content || !keywords.length) return content;
+        // Hàm làm sạch giá trị
+        function cleanValue(text) {
+            if (!text) return '';
             
-            let highlightedContent = content;
-            keywords.forEach(keyword => {
-                if (keyword.trim()) {
-                    // Tạo regex với flag 'gi' (global, case-insensitive)
-                    const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                    highlightedContent = highlightedContent.replace(regex, '<span class="highlight">$1</span>');
-                }
-            });
-            return highlightedContent;
+            let cleaned = text.trim();
+            
+            // Loại bỏ dấu ngoặc kép ở đầu và cuối
+            if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+                cleaned = cleaned.substring(1, cleaned.length - 1);
+            }
+            
+            return cleaned.trim();
+        }
+        
+        // Hàm highlight từ khóa tìm kiếm
+        function highlightKeyword(text, keyword) {
+            if (!text || !keyword) return text;
+            
+            try {
+                const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
+                return text.replace(regex, '<span class="highlight">$1</span>');
+            } catch (e) {
+                return text;
+            }
+        }
+        
+        // Hàm escape regex
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
         
         // Hàm hiển thị loading
@@ -678,8 +584,8 @@ function parseCSV(csvText) {
                 <div class="ready-message">
                     <div class="ready-icon">✅</div>
                     <h3>Dữ liệu đã sẵn sàng!</h3>
+                    <p>Đã tải ${sheetData.length} bản ghi từ Google Sheets</p>
                     <p>Hãy nhập từ khóa để bắt đầu tìm kiếm</p>
-                    <p style="font-size: 0.9rem; margin-top: 10px;">Tổng số bản ghi: ${sheetData.length}</p>
                 </div>
             `;
         }
@@ -687,167 +593,117 @@ function parseCSV(csvText) {
         // Hàm hiển thị lỗi
         function showError(message) {
             const resultsSection = document.getElementById('resultsSection');
-            resultsSection.innerHTML = `<div class="error">${message}</div>`;
+            resultsSection.innerHTML = `
+                <div class="error">
+                    ${message}
+                </div>
+            `;
         }
         
-        // Hàm tìm kiếm trong dữ liệu (không phân biệt hoa thường)
-        function searchData(searchText) {
-            if (!searchText.trim()) {
-                return { results: [], keywords: [] };
+        // Hàm tìm kiếm dữ liệu
+        function searchData(keyword) {
+            if (!keyword.trim() || sheetData.length === 0) {
+                return [];
             }
             
-            // Tách các từ khóa từ input
-            const keywords = searchText.split(/[\s,]+/)
-                .map(keyword => keyword.trim())
-                .filter(keyword => keyword);
+            const lowerKeyword = keyword.toLowerCase();
             
-            if (keywords.length === 0) return { results: [], keywords: [] };
-            
-            // Tìm kiếm các bản ghi chứa ít nhất một từ khóa trong các trường cần thiết
-            const results = sheetData.filter(row => {
-                // Kiểm tra trong các trường: Tên khách hàng, Tên khuôn dao, Ghi chú
-                const khachHang = row['Tên khách hàng'] || '';
-                const khuonDao = row['Tên khuôn dao'] || '';
-                const ghiChu = row['Ghi chú'] || '';
-                
-                // Kết hợp tất cả các trường để tìm kiếm
-                const searchString = `${khachHang} ${khuonDao} ${ghiChu}`.toLowerCase();
-                
-                // Kiểm tra xem có từ khóa nào khớp không
-                return keywords.some(keyword => 
-                    searchString.includes(keyword.toLowerCase())
+            // Tìm kiếm trong tất cả các cột
+            const results = sheetData.filter(item => {
+                return (
+                    (item.customer && item.customer.toLowerCase().includes(lowerKeyword)) ||
+                    (item.knifeName && item.knifeName.toLowerCase().includes(lowerKeyword)) ||
+                    (item.price && item.price.toLowerCase().includes(lowerKeyword)) ||
+                    (item.floor && item.floor.toLowerCase().includes(lowerKeyword)) ||
+                    (item.note && item.note.toLowerCase().includes(lowerKeyword))
                 );
             });
             
-            return {
-                results: results,
-                keywords: keywords
-            };
+            return results;
         }
         
-        // Hàm hiển thị kết quả
-        function displayResults(searchData) {
+        // Hàm hiển thị kết quả - BỎ CỘT TT
+        function displayResults(results, keyword) {
             const resultsSection = document.getElementById('resultsSection');
-            const { results, keywords } = searchData;
             
-            // Xóa kết quả cũ
-            resultsSection.innerHTML = '';
-            
-            // Hiển thị tổng hợp kết quả
-            if (results.length > 0) {
-                // Tạo summary card
-                const summaryDiv = document.createElement('div');
-                summaryDiv.className = 'summary-card';
-                
-                let summaryHTML = `
-                    <div class="summary-title">
-                        <span>📊 TỔNG HỢP KẾT QUẢ</span>
-                    </div>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <div class="summary-code">Tìm thấy</div>
-                            <div class="summary-count">${results.length} kết quả</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-code">Từ khóa</div>
-                            <div class="summary-count">${keywords.join(', ')}</div>
-                        </div>
-                    </div>
-                `;
-                
-                summaryDiv.innerHTML = summaryHTML;
-                resultsSection.appendChild(summaryDiv);
-                
-                // Tạo container cho kết quả chi tiết
-                const resultsContainer = document.createElement('div');
-                resultsContainer.className = 'results-container';
-                
-                // Tiêu đề kết quả
-                let resultsHTML = `
-                    <div class="result-group">
-                        <div class="result-header">
-                            <div class="result-title">Kết quả tìm kiếm</div>
-                            <div class="result-count">${results.length} kết quả</div>
-                        </div>
-                        <div class="results-grid">
-                `;
-                
-                // Hiển thị chi tiết từng kết quả
-                results.forEach((item, index) => {
-                    const khachHang = item['Tên khách hàng'] || 'Chưa có thông tin';
-                    const khuonDao = item['Tên khuôn dao'] || 'Chưa có thông tin';
-                    const giaDao = item['Giá dao'] || 'Chưa có thông tin';
-                    const tang = item['Tầng'] || 'Chưa có thông tin';
-                    const ghiChu = item['Ghi chú'] || 'Không có ghi chú';
-                    
-                    // Highlight các từ khóa trong các trường
-                    const highlightedKhachHang = highlightText(khachHang, keywords);
-                    const highlightedKhuonDao = highlightText(khuonDao, keywords);
-                    const highlightedGhiChu = highlightText(ghiChu, keywords);
-                    
-                    resultsHTML += `
-                        <div class="result-card">
-                            <div class="card-header">
-                                <div class="stt-container">
-                                    <div class="stt-label">STT</div>
-                                    <div class="stt-value">${item.STT || (index + 1)}</div>
-                                </div>
-                                <div class="khachhang-container">
-                                    <div class="khachhang-label">Khách hàng</div>
-                                    <div class="khachhang-value">${highlightedKhachHang}</div>
-                                </div>
-                            </div>
-                            <div class="details">
-                                <div class="detail-item">
-                                    <div class="detail-label">Khuôn dao</div>
-                                    <div class="detail-value">${highlightedKhuonDao}</div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">Giá dao</div>
-                                    <div class="detail-value price-value">${formatPrice(giaDao)}</div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">Tầng</div>
-                                    <div class="detail-value">${tang}</div>
-                                </div>
-                                <div class="detail-item full-width">
-                                    <div class="detail-label">Ghi chú</div>
-                                    <div class="detail-value ghichu-value">${highlightedGhiChu}</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                resultsHTML += `</div></div>`;
-                resultsContainer.innerHTML = resultsHTML;
-                resultsSection.appendChild(resultsContainer);
-            } else {
+            if (results.length === 0) {
                 resultsSection.innerHTML = `
                     <div class="no-results">
                         <div class="no-results-icon">🔍</div>
                         <h3>Không tìm thấy kết quả</h3>
-                        <p>Không tìm thấy kết quả nào cho từ khóa đã nhập.<br>Vui lòng thử với từ khóa khác.</p>
+                        <p>Không tìm thấy kết quả nào cho từ khóa "${keyword}"</p>
+                        <p>Tổng số dao được nhập trong hệ thống: ${sheetData.length}</p>
                     </div>
                 `;
+                return;
             }
+            
+            let html = `
+                <div class="results-header">
+                    <h2>Kết quả tìm kiếm</h2>
+                    <div class="result-count">${results.length} kết quả</div>
+                </div>
+                <div class="results-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Khách hàng</th>
+                                <th>Tên khuôn dao</th>
+                                <th>Số giá</th>
+                                <th>Tầng</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            results.forEach((item, index) => {
+                const badgeClass = getCustomerBadgeClass(item.customer);
+                
+                html += `
+                    <tr>
+                        <td><span class="customer-badge ${badgeClass}">${highlightKeyword(item.customer || 'N/A', keyword)}</span></td>
+                        <td><strong>${highlightKeyword(item.knifeName || 'N/A', keyword)}</strong></td>
+                        <td>${highlightKeyword(item.price || 'N/A', keyword)}</td>
+                        <td>${highlightKeyword(item.floor || 'N/A', keyword)}</td>
+                        <td>${highlightKeyword(item.note || 'Không có ghi chú', keyword)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            resultsSection.innerHTML = html;
         }
         
-        // Hàm định dạng giá tiền
-        function formatPrice(price) {
-            if (!price) return 'Chưa có thông tin';
+        // Hàm xác định badge class cho khách hàng
+        function getCustomerBadgeClass(customer) {
+            if (!customer) return '';
             
-            // Thử chuyển đổi sang số
-            const num = parseFloat(price.replace(/[^\d.-]/g, ''));
-            if (isNaN(num)) return price;
+            const customerLower = customer.toLowerCase();
             
-            // Định dạng số với dấu phân cách hàng nghìn
-            return num.toLocaleString('vi-VN') + ' VND';
+            if (customerLower.includes('canon')) return 'canon-badge';
+            if (customerLower.includes('eva')) return 'eva-badge';
+            if (customerLower.includes('sj-tech') || customerLower.includes('sjtech')) return 'sjtech-badge';
+            if (customerLower.includes('am tex')) return 'amtex-badge';
+            if (customerLower.includes('sunplus')) return 'sunplus-badge';
+            if (customerLower.includes('rhythm')) return 'rhythm-badge';
+            if (customerLower.includes('enshsanko')) return 'enshsanko-badge';
+            if (customerLower.includes('khắc hùng')) return 'khachung-badge';
+            if (customerLower.includes('inoac')) return 'inoac-badge';
+            if (customerLower.includes('alden')) return 'alden-badge';
+            if (customerLower.includes('iriso')) return 'iris-badge';
+            
+            return '';
         }
         
         // Hàm khởi tạo
         async function init() {
-            // Tải dữ liệu từ Google Sheet
+            // Tải dữ liệu TRỰC TIẾP từ Google Sheets
             await loadSheetData();
             
             // Thêm sự kiện cho nút tìm kiếm
@@ -859,21 +715,26 @@ function parseCSV(csvText) {
                     handleSearch();
                 }
             });
+            
+            // Auto focus vào ô tìm kiếm
+            setTimeout(() => {
+                document.getElementById('searchInput').focus();
+            }, 500);
         }
         
         // Hàm xử lý tìm kiếm
         function handleSearch() {
-            const searchText = document.getElementById('searchInput').value;
-            if (searchText.trim()) {
-                const searchResults = searchData(searchText);
-                displayResults(searchResults);
+            const keyword = document.getElementById('searchInput').value;
+            if (keyword.trim()) {
+                const results = searchData(keyword);
+                displayResults(results, keyword);
             } else {
-                // Nếu không có từ khóa, hiển thị thông báo sẵn sàng
+                // Nếu ô tìm kiếm trống, hiển thị lại thông báo sẵn sàng
                 showReadyMessage();
             }
         }
         
-        // Khởi chạy ứng dụng khi trang tải xong
+        // Khởi chạy ứng dụng
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
