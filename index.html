@@ -4,425 +4,483 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tool Tìm Kiếm Khuôn Dao</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232F6FB0%22/><circle cx=%2244%22 cy=%2244%22 r=%2224%22 fill=%22none%22 stroke=%22white%22 stroke-width=%2210%22/><path d=%22M63 63l20 20%22 stroke=%22white%22 stroke-width=%2210%22 stroke-linecap=%22round%22/></svg>">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            /* Color: xanh dương + xám thép */
+            --accent: #2F6FB0;
+            --accent-ink: #1F5088;
+            --accent-tint: #EAF2FA;
+            --ink: #1B2430;
+            --ink-soft: #5B6776;
+            --bg: #F3F5F8;
+            --surface: #FFFFFF;
+            --line: #E1E6ED;
+            --line-strong: #CBD3DE;
+            --mark: #FFE9A8;
+            --danger: #B3261E;
+            --danger-tint: #FDECEA;
+
+            /* Spacing */
+            --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+            --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+
+            /* Radius */
+            --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-pill: 999px;
+
+            /* Elevation */
+            --sh-1: 0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.06);
+            --sh-2: 0 4px 8px -2px rgba(16,24,40,.08), 0 2px 4px -2px rgba(16,24,40,.05);
+
+            /* Motion */
+            --ease-out: cubic-bezier(.16, 1, .3, 1);
+            --dur-fast: 150ms; --dur-base: 240ms;
         }
-        
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
+
         body {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: #333;
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.55;
+            min-height: 100dvh;
         }
-        
-        .container {
-            max-width: 1200px;
+
+        ::selection { background: var(--accent-tint); }
+
+        .wrap {
+            max-width: 1120px;
             margin: 0 auto;
+            padding: 0 var(--space-5);
         }
-        
-        .app-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            margin-bottom: 20px;
+
+        /* ---------- Top bar ---------- */
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--line);
         }
-        
-        header {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            color: white;
-            padding: 30px;
-            text-align: center;
+        .topbar .wrap {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            height: 64px;
         }
-        
+        .brand-mark {
+            width: 34px; height: 34px;
+            border-radius: var(--r-md);
+            background: var(--accent);
+            color: #fff;
+            display: grid; place-items: center;
+            flex: none;
+        }
+        .brand-name { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+        .brand-sub { color: var(--ink-soft); font-size: .875rem; }
+        .brand-text { display: flex; flex-direction: column; line-height: 1.25; }
+
+        .icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+        /* ---------- Search ---------- */
+        .search-area { padding: var(--space-7) 0 var(--space-5); }
+
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+            font-size: clamp(1.6rem, 1.1rem + 2vw, 2.25rem);
+            line-height: 1.15;
+            letter-spacing: -0.02em;
             font-weight: 700;
+            margin-bottom: var(--space-2);
         }
-        
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-        
-        .search-section {
-            padding: 30px;
-            border-bottom: 1px solid #eaeaea;
-            background: #f8f9fa;
-        }
-        
-        .search-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
+        .lead { color: var(--ink-soft); max-width: 60ch; margin-bottom: var(--space-5); }
+
         .search-box {
             display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: var(--space-3);
         }
-        
-        input[type="text"] {
+        .field {
+            position: relative;
             flex: 1;
-            padding: 16px 20px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-            background: white;
         }
-        
+        .field .icon-search {
+            position: absolute; left: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-soft);
+            pointer-events: none;
+        }
+        input[type="text"] {
+            width: 100%;
+            height: 56px;
+            padding: 0 88px 0 48px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--r-md);
+            font: inherit;
+            font-size: 1.0625rem;
+            color: var(--ink);
+            background: var(--surface);
+            box-shadow: var(--sh-1);
+            transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+        }
+        input[type="text"]::placeholder { color: #7A8594; }
+        input[type="text"]:hover { border-color: #AEB9C7; }
         input[type="text"]:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(47,111,176,.16);
         }
-        
-        button {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 16px 28px;
-            border-radius: 8px;
+
+        .field-end {
+            position: absolute; right: 10px; top: 50%;
+            transform: translateY(-50%);
+            display: flex; align-items: center; gap: var(--space-2);
+        }
+        .kbd {
+            font-size: .75rem; color: var(--ink-soft);
+            border: 1px solid var(--line-strong);
+            border-bottom-width: 2px;
+            border-radius: var(--r-sm);
+            padding: 0 7px; line-height: 22px;
+            background: var(--bg);
+        }
+        .clear-btn {
+            display: none;
+            width: 32px; height: 32px;
+            border: 0; border-radius: var(--r-pill);
+            background: transparent; color: var(--ink-soft);
             cursor: pointer;
-            font-size: 16px;
+            place-items: center;
+            transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+        }
+        .clear-btn:hover { background: var(--line); color: var(--ink); }
+        .clear-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+        .has-value .clear-btn { display: grid; }
+        .has-value .kbd { display: none; }
+
+        button.primary {
+            height: 56px;
+            padding: 0 var(--space-6);
+            border: 0;
+            border-radius: var(--r-md);
+            background: var(--accent);
+            color: #fff;
+            font: inherit;
             font-weight: 600;
-            transition: all 0.3s;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+        }
+        button.primary:hover { background: var(--accent-ink); box-shadow: var(--sh-2); }
+        button.primary:active { transform: scale(.98); }
+        button.primary:focus-visible { outline: 3px solid rgba(47,111,176,.4); outline-offset: 2px; }
+
+        .search-hint { color: var(--ink-soft); font-size: .875rem; margin-top: var(--space-3); }
+
+        /* ---------- Filter chips ---------- */
+        .chips {
+            display: flex;
+            gap: var(--space-2);
+            overflow-x: auto;
+            padding: var(--space-4) 0 var(--space-1);
+            scrollbar-width: thin;
+        }
+        .chips:empty { display: none; }
+        .chip {
+            flex: none;
+            display: inline-flex; align-items: center; gap: var(--space-2);
+            height: 34px;
+            padding: 0 var(--space-3);
+            border: 1px solid var(--line-strong);
+            border-radius: var(--r-pill);
+            background: var(--surface);
+            color: var(--ink);
+            font: inherit; font-size: .875rem; font-weight: 500;
+            cursor: pointer;
+            transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+        }
+        .chip:hover { border-color: var(--accent); background: var(--accent-tint); }
+        .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .chip .n { font-size: .8125rem; opacity: .7; font-weight: 600; }
+
+        /* ---------- Results ---------- */
+        .results-meta {
+            display: flex; align-items: baseline; justify-content: space-between;
+            gap: var(--space-3);
+            padding: var(--space-4) 0 var(--space-3);
+        }
+        .results-meta h2 { font-size: 1.0625rem; font-weight: 700; }
+        .result-count { color: var(--ink-soft); font-size: .9375rem; }
+        .result-count strong { color: var(--ink); }
+
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--sh-1);
+            overflow: hidden;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            padding: var(--space-3) var(--space-4);
+            text-align: left;
+            font-size: .8125rem;
+            font-weight: 600;
+            letter-spacing: .02em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            background: #F8FAFC;
+            border-bottom: 1px solid var(--line);
+            position: sticky; top: 0;
+        }
+        tbody tr { border-bottom: 1px solid var(--line); transition: background var(--dur-fast) var(--ease-out); }
+        tbody tr:last-child { border-bottom: 0; }
+        tbody tr:hover { background: #F8FAFC; }
+        td { padding: var(--space-4); vertical-align: top; font-size: .9375rem; }
+        td.knife { font-weight: 600; }
+        td.note { color: var(--ink-soft); }
+        td.empty { color: #8A94A2; }
+
+        .loc {
+            display: inline-block;
+            min-width: 2.25em;
+            padding: 2px var(--space-2);
+            border-radius: var(--r-sm);
+            background: var(--accent-tint);
+            color: var(--accent-ink);
+            font-weight: 700;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .customer-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            font-size: .875rem; font-weight: 600;
             white-space: nowrap;
         }
-        
-        button:hover {
-            background: #2980b9;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        .customer-badge::before {
+            content: '';
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--dot, var(--line-strong));
+            flex: none;
         }
-        
-        .search-instruction {
-            color: #7f8c8d;
-            font-size: 14px;
+        .canon-badge { --dot: #2980b9; }
+        .eva-badge { --dot: #d9a21b; }
+        .sjtech-badge { --dot: #27ae60; }
+        .amtex-badge { --dot: #8e44ad; }
+        .sunplus-badge { --dot: #e67e22; }
+        .rhythm-badge { --dot: #16a085; }
+        .enshsanko-badge { --dot: #d35400; }
+        .inoac-badge { --dot: #2c3e50; }
+        .alden-badge { --dot: #c0392b; }
+        .iris-badge { --dot: #7f8c8d; }
+        .khachung-badge { --dot: #1abc9c; }
+
+        mark.highlight {
+            background: var(--mark);
+            color: inherit;
+            padding: 0 2px;
+            border-radius: 3px;
+        }
+
+        .more-note { padding: var(--space-3) var(--space-4); color: var(--ink-soft); font-size: .875rem; border-top: 1px solid var(--line); background: #F8FAFC; }
+
+        /* ---------- States ---------- */
+        .state {
+            background: var(--surface);
+            border: 1px dashed var(--line-strong);
+            border-radius: var(--r-lg);
+            padding: var(--space-7) var(--space-5);
             text-align: center;
+            color: var(--ink-soft);
         }
-        
-        .results-section {
-            padding: 0;
+        .state h3 { color: var(--ink); font-size: 1.125rem; margin-bottom: var(--space-1); }
+        .state p + p { margin-top: var(--space-1); }
+        .state .state-icon {
+            width: 48px; height: 48px; margin: 0 auto var(--space-4);
+            border-radius: var(--r-pill);
+            background: var(--accent-tint); color: var(--accent);
+            display: grid; place-items: center;
         }
-        
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 30px;
-            border-bottom: 2px solid #3498db;
-            background: #f8f9fa;
-        }
-        
-        .results-header h2 {
-            font-size: 1.5rem;
-            color: #2c3e50;
-        }
-        
-        .result-count {
-            background: #3498db;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .results-container {
-            padding: 20px 30px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        
-        thead {
-            background-color: #2c3e50;
-            color: white;
-            position: sticky;
-            top: 0;
-        }
-        
-        th {
-            padding: 15px 12px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 15px;
-        }
-        
-        tbody tr {
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.2s;
-        }
-        
-        tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        td {
-            padding: 15px 12px;
-            font-size: 15px;
-        }
-        
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            color: #7f8c8d;
-        }
-        
-        .no-results-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-            color: #3498db;
-        }
-        
+        .state .state-icon .icon { width: 24px; height: 24px; }
+
         .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #eaeaea;
-            border-top: 4px solid #3498db;
+            width: 28px; height: 28px;
+            border: 3px solid var(--line);
+            border-top-color: var(--accent);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            animation: spin .8s linear infinite;
+            margin: 0 auto var(--space-4);
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .ready-message {
-            text-align: center;
-            padding: 60px 20px;
-            color: #27ae60;
-        }
-        
-        .ready-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-        }
-        
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .error {
-            background: #ffeaea;
-            color: #d32f2f;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #d32f2f;
-            margin: 20px 30px;
-            text-align: center;
+            background: var(--danger-tint);
+            color: var(--danger);
+            padding: var(--space-5);
+            border-radius: var(--r-lg);
+            border-left: 4px solid var(--danger);
+            line-height: 1.7;
         }
-        
+
         .data-source {
-            margin-top: 20px;
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 14px;
-            padding: 20px;
-            border-top: 1px solid #eee;
+            padding: var(--space-6) 0 var(--space-7);
+            color: var(--ink-soft);
+            font-size: .875rem;
         }
-        
-        .highlight {
-            background-color: #fff9c4;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: 600;
+
+        /* ---------- Motion ---------- */
+        @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .rise { animation: rise var(--dur-base) var(--ease-out) both; }
+        tbody tr.row-in { animation: rise var(--dur-base) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 25ms); }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after { animation: none !important; transition-duration: .01ms !important; }
         }
-        
-        .customer-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        
-        .canon-badge {
-            background-color: #e8f4fc;
-            color: #2980b9;
-        }
-        
-        .eva-badge {
-            background-color: #f9f4e6;
-            color: #f39c12;
-        }
-        
-        .sjtech-badge {
-            background-color: #e8f6ef;
-            color: #27ae60;
-        }
-        
-        .amtex-badge {
-            background-color: #f4ecf7;
-            color: #8e44ad;
-        }
-        
-        .sunplus-badge {
-            background-color: #fff5e6;
-            color: #e67e22;
-        }
-        
-        .rhythm-badge {
-            background-color: #e8f8f5;
-            color: #16a085;
-        }
-        
-        .enshsanko-badge {
-            background-color: #fef9e7;
-            color: #d35400;
-        }
-        
-        .inoac-badge {
-            background-color: #eaf2f8;
-            color: #2c3e50;
-        }
-        
-        .alden-badge {
-            background-color: #fdedec;
-            color: #c0392b;
-        }
-        
-        .iris-badge {
-            background-color: #f4f6f6;
-            color: #7f8c8d;
-        }
-        
-        .khachung-badge {
-            background-color: #e8f6f3;
-            color: #1abc9c;
-        }
-        
+
+        /* ---------- Mobile ---------- */
         @media (max-width: 768px) {
-            .search-box {
-                flex-direction: column;
+            .wrap { padding: 0 var(--space-4); }
+            .search-area { padding-top: var(--space-5); }
+            .search-box { flex-direction: column; }
+            button.primary { width: 100%; height: 48px; }
+            .kbd { display: none; }
+
+            .table-card { background: transparent; border: 0; box-shadow: none; overflow: visible; }
+            table, tbody, tr, td { display: block; }
+            thead { display: none; }
+            tbody tr {
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: var(--r-lg);
+                box-shadow: var(--sh-1);
+                padding: var(--space-3) var(--space-4);
+                margin-bottom: var(--space-3);
             }
-            
-            table {
-                display: block;
-                overflow-x: auto;
+            tbody tr:last-child { border-bottom: 1px solid var(--line); }
+            td { padding: var(--space-1) 0; display: flex; gap: var(--space-3); }
+            td::before {
+                content: attr(data-label);
+                flex: 0 0 92px;
+                color: var(--ink-soft);
+                font-size: .8125rem;
+                font-weight: 400;
+                padding-top: 2px;
             }
-            
-            header, .search-section, .results-container {
-                padding: 20px;
-            }
-            
-            .results-header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
+            .more-note { border: 1px solid var(--line); border-radius: var(--r-md); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="app-card">
-            <header>
-                <h1>🔍 Tool Tìm Kiếm Khuôn Dao</h1>
-                <div class="subtitle">Tra cứu vị trí khuôn dao nhanh</div>
-            </header>
-            
-            <div class="search-section">
-                <div class="search-container">
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Nhập tên từ khóa gợi ý">
-                        <button id="searchButton">Tìm Kiếm</button>
-                    </div>
-                    <div class="search-instruction">
-                        Nhập từ khóa tìm kiếm vào ô trên.
-                    </div>
-                </div>
+    <header class="topbar">
+        <div class="wrap">
+            <div class="brand-mark" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
             </div>
-            
-            <div id="resultsSection" class="results-section">
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>Đang tải dữ liệu từ Google Sheets...</p>
-                </div>
-            </div>
-            
-            <div class="data-source" id="dataSource">
-                Nguồn dữ liệu: Google Sheets
+            <div class="brand-text">
+                <span class="brand-name">Tool Tìm Kiếm Khuôn Dao</span>
+                <span class="brand-sub">Tra cứu vị trí khuôn dao nhanh</span>
             </div>
         </div>
-    </div>
+    </header>
+
+    <main class="wrap">
+        <section class="search-area">
+            <h1>Khuôn dao này đang ở đâu?</h1>
+            <p class="lead">Gõ tên khách hàng, tên khuôn dao, số giá hoặc tầng. Kết quả hiện ngay khi bạn gõ.</p>
+
+            <div class="search-box">
+                <div class="field" id="field">
+                    <svg class="icon icon-search" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="searchInput" placeholder="Nhập tên từ khóa gợi ý" autocomplete="off" spellcheck="false" aria-label="Từ khóa tìm kiếm">
+                    <div class="field-end">
+                        <span class="kbd" aria-hidden="true">/</span>
+                        <button type="button" class="clear-btn" id="clearButton" aria-label="Xóa từ khóa">
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="primary" id="searchButton">Tìm Kiếm</button>
+            </div>
+            <p class="search-hint">Gõ nhiều từ để thu hẹp, ví dụ "canon khung". Không cần gõ dấu tiếng Việt.</p>
+
+            <div class="chips" id="chips" role="group" aria-label="Lọc theo khách hàng"></div>
+        </section>
+
+        <section id="resultsSection" aria-live="polite">
+            <div class="state loading">
+                <div class="loading-spinner"></div>
+                <p>Đang tải dữ liệu từ Google Sheets...</p>
+            </div>
+        </section>
+
+        <div class="data-source" id="dataSource">
+            Nguồn dữ liệu: Google Sheets
+        </div>
+    </main>
 
     <script>
         // URL của file CSV từ Google Sheets
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTirzkQ-KBQblCZgb9Jk4rop75HJ5cBwRi30kg_L_DpLIpxOb_XHZEk_bAO92RYtg/pub?output=csv';
-        
+
         // Biến lưu trữ dữ liệu
         let sheetData = [];
-        
+        let activeCustomer = '';   // bộ lọc khách hàng đang chọn
+        let dataReady = false;
+        const MAX_ROWS = 300;
+
         // Hàm tải dữ liệu từ Google Sheets
         async function loadSheetData() {
             try {
                 showLoading('Đang tải dữ liệu từ Google Sheets...');
-                
+
                 console.log('Bắt đầu tải dữ liệu từ URL:', CSV_URL);
-                
+
                 // Thêm timestamp để tránh cache
                 const urlWithTimestamp = `${CSV_URL}&t=${Date.now()}`;
-                
+
                 const response = await fetch(urlWithTimestamp, {
                     headers: {
                         'Accept': 'text/csv',
                         'Cache-Control': 'no-cache'
                     }
                 });
-                
+
                 console.log('Response status:', response.status, response.statusText);
-                
+
                 if (!response.ok) {
                     throw new Error(`Lỗi HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const csvText = await response.text();
                 console.log('Dữ liệu CSV đã tải thành công, kích thước:', csvText.length, 'bytes');
-                
+
                 // Parse dữ liệu CSV
                 const parsedData = parseCSV(csvText);
-                
+
                 if (parsedData.length === 0) {
                     throw new Error('Không tìm thấy dữ liệu hợp lệ trong file CSV');
                 }
-                
+
                 sheetData = parsedData;
+                dataReady = true;
                 console.log('Đã parse thành công', sheetData.length, 'bản ghi từ Google Sheets');
-                
+
                 // Ẩn loading
                 hideLoading();
-                
-                // Hiển thị thông báo sẵn sàng
-                showReadyMessage();
-                
+
+                // Hiển thị thông báo sẵn sàng (hoặc kết quả nếu người dùng đã gõ trong lúc tải)
+                handleSearch();
+
                 // Cập nhật nguồn dữ liệu
                 document.getElementById('dataSource').textContent = `Nguồn dữ liệu: Google Sheets (${sheetData.length} bản ghi)`;
-                
+
             } catch (error) {
                 console.error('Lỗi chi tiết khi tải dữ liệu:', error);
-                
+
                 // Hiển thị thông báo lỗi
                 showError(`
-                    <strong>Không thể tải dữ liệu từ Google Sheets</strong><br><br>
-                    Lỗi: ${error.message}<br><br>
+                    <strong>Không thể tải dữ liệu từ Google Sheets</strong><br>
+                    Lỗi: ${escapeHtml(error.message)}<br><br>
                     Vui lòng kiểm tra:<br>
                     1. Link CSV có đúng không<br>
                     2. File Google Sheets đã publish chưa<br>
@@ -430,47 +488,47 @@
                 `);
             }
         }
-        
+
         // Hàm parse CSV - lấy dữ liệu từ dòng 3
         function parseCSV(csvText) {
             const result = [];
-            
+
             if (!csvText || csvText.trim() === '') {
                 console.error('CSV text rỗng');
                 return result;
             }
-            
+
             // Tách dòng
             const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
-            
+
             console.log(`Tổng số dòng trong CSV: ${lines.length}`);
-            
+
             if (lines.length < 3) {
                 console.error('CSV không đủ 3 dòng dữ liệu');
                 return result;
             }
-            
+
             // BẮT ĐẦU TỪ DÒNG 3 (index 2)
             const startRow = 2; // Dòng thứ 3 trong file
-            
+
             console.log(`Bắt đầu parse từ dòng ${startRow + 1} (dòng thứ 3 trong file)`);
-            
+
             // Parse từng dòng dữ liệu từ dòng 3 trở đi
             for (let i = startRow; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (!line) continue;
-                
+
                 // Phân tích dòng CSV
                 const columns = parseCSVLine(line);
-                
-                // Cột B-F theo yêu cầu: 
+
+                // Cột B-F theo yêu cầu:
                 // columns[0] = cột A (bỏ qua)
                 // columns[1] = cột B: Tên khách hàng
                 // columns[2] = cột C: Tên khuôn dao
                 // columns[3] = cột D: Giá dao (số giá sắt)
                 // columns[4] = cột E: Tầng
                 // columns[5] = cột F: Ghi chú
-                
+
                 if (columns.length >= 6) { // Phải có đủ 6 cột A-F
                     const record = {
                         customer: cleanValue(columns[1]),     // Cột B: Tên khách hàng
@@ -479,35 +537,35 @@
                         floor: cleanValue(columns[4]),        // Cột E: Tầng
                         note: cleanValue(columns[5])          // Cột F: Ghi chú
                     };
-                    
+
                     // Kiểm tra xem có phải là dòng dữ liệu hợp lệ không
                     // Bỏ qua dòng tiêu đề (nếu có)
                     const isHeader = record.customer.toLowerCase().includes('khách') ||
                                     record.knifeName.toLowerCase().includes('tên') ||
                                     record.customer.toLowerCase().includes('tên');
-                    
+
                     const hasData = record.customer || record.knifeName;
-                    
+
                     if (!isHeader && hasData) {
                         result.push(record);
                     }
                 }
             }
-            
+
             console.log(`Đã parse được ${result.length} bản ghi hợp lệ`);
             console.log('5 bản ghi đầu tiên:', result.slice(0, 5));
             return result;
         }
-        
+
         // Hàm parse dòng CSV đơn giản
         function parseCSVLine(line) {
             const result = [];
             let current = '';
             let inQuotes = false;
-            
+
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
-                
+
                 if (char === '"') {
                     if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
                         current += '"';
@@ -522,53 +580,111 @@
                     current += char;
                 }
             }
-            
+
             result.push(current);
             return result;
         }
-        
+
         // Hàm làm sạch giá trị
         function cleanValue(text) {
             if (!text) return '';
-            
+
             let cleaned = text.trim();
-            
+
             // Loại bỏ dấu ngoặc kép ở đầu và cuối
             if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
                 cleaned = cleaned.substring(1, cleaned.length - 1);
             }
-            
+
             return cleaned.trim();
         }
-        
-        // Hàm highlight từ khóa tìm kiếm
-        function highlightKeyword(text, keyword) {
-            if (!text || !keyword) return text;
-            
-            try {
-                const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
-                return text.replace(regex, '<span class="highlight">$1</span>');
-            } catch (e) {
-                return text;
+
+        // ================= TÌM KIẾM CẢI TIẾN =================
+
+        // Escape HTML để không chèn mã từ dữ liệu/từ khóa vào trang
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        // Chuẩn hóa: bỏ dấu tiếng Việt, hạ chữ thường. map[i] = vị trí ký tự gốc của ký tự thứ i sau chuẩn hóa
+        function fold(s) {
+            let f = '';
+            const map = [];
+            const str = String(s || '');
+            for (let i = 0; i < str.length; i++) {
+                const c = str[i].normalize('NFD').replace(/[̀-ͯ]/g, '')
+                    .replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+                for (const ch of c) { f += ch; map.push(i); }
             }
+            return { f, map };
         }
-        
-        // Hàm escape regex
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        // Cache chuẩn hóa từng bản ghi (không sửa dữ liệu gốc)
+        const foldCache = new WeakMap();
+        function getFolded(item) {
+            let c = foldCache.get(item);
+            if (!c) {
+                c = {
+                    customer: fold(item.customer).f,
+                    knifeName: fold(item.knifeName).f,
+                    price: fold(item.price).f,
+                    floor: fold(item.floor).f,
+                    note: fold(item.note).f
+                };
+                c.all = [c.customer, c.knifeName, c.price, c.floor, c.note].join(' | ');
+                foldCache.set(item, c);
+            }
+            return c;
         }
-        
+
+        function getTokens(keyword) {
+            return fold(keyword).f.split(/\s+/).filter(Boolean);
+        }
+
+        // Hàm highlight từ khóa tìm kiếm (không phân biệt dấu, nhiều từ). Trả về HTML đã escape.
+        function highlightKeyword(text, keyword) {
+            if (!text) return '';
+            const tokens = Array.isArray(keyword) ? keyword : getTokens(keyword);
+            if (!tokens.length) return escapeHtml(text);
+
+            const { f, map } = fold(text);
+            const ranges = [];
+            tokens.forEach(t => {
+                let from = 0, idx;
+                while ((idx = f.indexOf(t, from)) !== -1) {
+                    ranges.push([map[idx], map[idx + t.length - 1] + 1]);
+                    from = idx + t.length;
+                }
+            });
+            if (!ranges.length) return escapeHtml(text);
+
+            ranges.sort((a, b) => a[0] - b[0]);
+            const merged = [ranges[0].slice()];
+            for (let i = 1; i < ranges.length; i++) {
+                const last = merged[merged.length - 1];
+                if (ranges[i][0] <= last[1]) last[1] = Math.max(last[1], ranges[i][1]);
+                else merged.push(ranges[i].slice());
+            }
+
+            let out = '', pos = 0;
+            merged.forEach(([a, b]) => {
+                out += escapeHtml(text.slice(pos, a)) + '<mark class="highlight">' + escapeHtml(text.slice(a, b)) + '</mark>';
+                pos = b;
+            });
+            return out + escapeHtml(text.slice(pos));
+        }
+
         // Hàm hiển thị loading
         function showLoading(message) {
             const resultsSection = document.getElementById('resultsSection');
             resultsSection.innerHTML = `
-                <div class="loading">
+                <div class="state loading">
                     <div class="loading-spinner"></div>
                     <p>${message}</p>
                 </div>
             `;
         }
-        
+
         // Hàm ẩn loading
         function hideLoading() {
             const resultsSection = document.getElementById('resultsSection');
@@ -576,20 +692,20 @@
                 resultsSection.innerHTML = '';
             }
         }
-        
+
         // Hàm hiển thị thông báo sẵn sàng
         function showReadyMessage() {
             const resultsSection = document.getElementById('resultsSection');
             resultsSection.innerHTML = `
-                <div class="ready-message">
-                    <div class="ready-icon">✅</div>
+                <div class="state rise">
+                    <div class="state-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
                     <h3>Dữ liệu đã sẵn sàng!</h3>
                     <p>Đã tải ${sheetData.length} bản ghi từ Google Sheets</p>
                     <p>Hãy nhập từ khóa để bắt đầu tìm kiếm</p>
                 </div>
             `;
         }
-        
+
         // Hàm hiển thị lỗi
         function showError(message) {
             const resultsSection = document.getElementById('resultsSection');
@@ -599,51 +715,81 @@
                 </div>
             `;
         }
-        
-        // Hàm tìm kiếm dữ liệu
+
+        // Hàm tìm kiếm dữ liệu: nhiều từ (AND), không phân biệt dấu, xếp theo độ liên quan.
+        // Trả về tất cả bản ghi khớp từ khóa (chưa lọc theo khách hàng).
         function searchData(keyword) {
-            if (!keyword.trim() || sheetData.length === 0) {
+            const tokens = getTokens(keyword);
+            if (!tokens.length || sheetData.length === 0) {
                 return [];
             }
-            
-            const lowerKeyword = keyword.toLowerCase();
-            
-            // Tìm kiếm trong tất cả các cột
-            const results = sheetData.filter(item => {
-                return (
-                    (item.customer && item.customer.toLowerCase().includes(lowerKeyword)) ||
-                    (item.knifeName && item.knifeName.toLowerCase().includes(lowerKeyword)) ||
-                    (item.price && item.price.toLowerCase().includes(lowerKeyword)) ||
-                    (item.floor && item.floor.toLowerCase().includes(lowerKeyword)) ||
-                    (item.note && item.note.toLowerCase().includes(lowerKeyword))
-                );
+
+            const scored = [];
+            sheetData.forEach((item, index) => {
+                const c = getFolded(item);
+                let score = 0;
+                for (const t of tokens) {
+                    if (!c.all.includes(t)) return;               // mọi từ phải xuất hiện
+                    if (c.knifeName.includes(t)) {
+                        score += 3;
+                        if (c.knifeName.startsWith(t) || c.knifeName.includes(' ' + t)) score += 2;
+                    }
+                    if (c.customer.includes(t)) score += 2;
+                    if (c.price.includes(t) || c.floor.includes(t)) score += 1;
+                    if (c.note.includes(t)) score += 1;
+                }
+                scored.push({ item, score, index });
             });
-            
-            return results;
+
+            scored.sort((a, b) => b.score - a.score || a.index - b.index);
+            return scored.map(s => s.item);
         }
-        
+
+        // Dựng thanh lọc theo khách hàng từ kết quả hiện có
+        function renderChips(results) {
+            const chipsEl = document.getElementById('chips');
+            const counts = new Map();
+            results.forEach(r => {
+                const name = r.customer || 'Khác';
+                counts.set(name, (counts.get(name) || 0) + 1);
+            });
+            if (counts.size < 2 && !activeCustomer) { chipsEl.innerHTML = ''; return; }
+
+            const entries = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+            if (activeCustomer && !counts.has(activeCustomer)) entries.unshift([activeCustomer, 0]);
+
+            chipsEl.innerHTML =
+                `<button type="button" class="chip" data-customer="" aria-pressed="${activeCustomer === ''}">Tất cả <span class="n">${results.length}</span></button>` +
+                entries.map(([name, n]) =>
+                    `<button type="button" class="chip" data-customer="${escapeHtml(name)}" aria-pressed="${activeCustomer === name}">${escapeHtml(name)} <span class="n">${n}</span></button>`
+                ).join('');
+        }
+
         // Hàm hiển thị kết quả - BỎ CỘT TT
         function displayResults(results, keyword) {
             const resultsSection = document.getElementById('resultsSection');
-            
+            const tokens = getTokens(keyword);
+
             if (results.length === 0) {
                 resultsSection.innerHTML = `
-                    <div class="no-results">
-                        <div class="no-results-icon">🔍</div>
+                    <div class="state rise">
+                        <div class="state-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
                         <h3>Không tìm thấy kết quả</h3>
-                        <p>Không tìm thấy kết quả nào cho từ khóa "${keyword}"</p>
+                        <p>Không tìm thấy kết quả nào cho từ khóa "${escapeHtml(keyword)}"</p>
                         <p>Tổng số dao được nhập trong hệ thống: ${sheetData.length}</p>
                     </div>
                 `;
                 return;
             }
-            
+
+            const shown = results.slice(0, MAX_ROWS);
+
             let html = `
-                <div class="results-header">
+                <div class="results-meta">
                     <h2>Kết quả tìm kiếm</h2>
-                    <div class="result-count">${results.length} kết quả</div>
+                    <div class="result-count"><strong>${results.length}</strong> kết quả</div>
                 </div>
-                <div class="results-container">
+                <div class="table-card">
                     <table>
                         <thead>
                             <tr>
@@ -656,36 +802,39 @@
                         </thead>
                         <tbody>
             `;
-            
-            results.forEach((item, index) => {
+
+            shown.forEach((item, index) => {
                 const badgeClass = getCustomerBadgeClass(item.customer);
-                
+                const cell = (v, fallback) => v ? highlightKeyword(v, tokens) : fallback;
+                const loc = (v) => v ? `<span class="loc">${highlightKeyword(v, tokens)}</span>` : 'N/A';
+
                 html += `
-                    <tr>
-                        <td><span class="customer-badge ${badgeClass}">${highlightKeyword(item.customer || 'N/A', keyword)}</span></td>
-                        <td><strong>${highlightKeyword(item.knifeName || 'N/A', keyword)}</strong></td>
-                        <td>${highlightKeyword(item.price || 'N/A', keyword)}</td>
-                        <td>${highlightKeyword(item.floor || 'N/A', keyword)}</td>
-                        <td>${highlightKeyword(item.note || 'Không có ghi chú', keyword)}</td>
+                    <tr class="row-in" style="--i:${Math.min(index, 12)}">
+                        <td data-label="Khách hàng"><span class="customer-badge ${badgeClass}">${cell(item.customer, 'N/A')}</span></td>
+                        <td data-label="Tên khuôn dao" class="knife">${cell(item.knifeName, 'N/A')}</td>
+                        <td data-label="Số giá">${loc(item.price)}</td>
+                        <td data-label="Tầng">${loc(item.floor)}</td>
+                        <td data-label="Ghi chú" class="note${item.note ? '' : ' empty'}">${cell(item.note, 'Không có ghi chú')}</td>
                     </tr>
                 `;
             });
-            
+
             html += `
                         </tbody>
                     </table>
+                    ${results.length > shown.length ? `<div class="more-note">Đang hiển thị ${shown.length} / ${results.length} kết quả. Gõ thêm từ khóa để thu hẹp.</div>` : ''}
                 </div>
             `;
-            
+
             resultsSection.innerHTML = html;
         }
-        
+
         // Hàm xác định badge class cho khách hàng
         function getCustomerBadgeClass(customer) {
             if (!customer) return '';
-            
+
             const customerLower = customer.toLowerCase();
-            
+
             if (customerLower.includes('canon')) return 'canon-badge';
             if (customerLower.includes('eva')) return 'eva-badge';
             if (customerLower.includes('sj-tech') || customerLower.includes('sjtech')) return 'sjtech-badge';
@@ -697,43 +846,91 @@
             if (customerLower.includes('inoac')) return 'inoac-badge';
             if (customerLower.includes('alden')) return 'alden-badge';
             if (customerLower.includes('iriso')) return 'iris-badge';
-            
+
             return '';
         }
-        
-        // Hàm khởi tạo
-        async function init() {
-            // Tải dữ liệu TRỰC TIẾP từ Google Sheets
-            await loadSheetData();
-            
-            // Thêm sự kiện cho nút tìm kiếm
-            document.getElementById('searchButton').addEventListener('click', handleSearch);
-            
-            // Thêm sự kiện cho phím Enter
-            document.getElementById('searchInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleSearch();
-                }
-            });
-            
-            // Auto focus vào ô tìm kiếm
-            setTimeout(() => {
-                document.getElementById('searchInput').focus();
-            }, 500);
-        }
-        
+
         // Hàm xử lý tìm kiếm
         function handleSearch() {
-            const keyword = document.getElementById('searchInput').value;
-            if (keyword.trim()) {
-                const results = searchData(keyword);
-                displayResults(results, keyword);
-            } else {
+            if (!dataReady) return;   // đang tải: loadSheetData sẽ gọi lại khi xong
+
+            const input = document.getElementById('searchInput');
+            const keyword = input.value;
+            document.getElementById('field').classList.toggle('has-value', keyword.length > 0);
+
+            const hasKeyword = keyword.trim() !== '';
+
+            if (!hasKeyword && !activeCustomer) {
                 // Nếu ô tìm kiếm trống, hiển thị lại thông báo sẵn sàng
+                document.getElementById('chips').innerHTML = '';
                 showReadyMessage();
+                return;
             }
+
+            // Có từ khóa: tìm trong mọi cột. Chỉ chọn khách hàng: liệt kê toàn bộ dao của khách đó.
+            const base = hasKeyword ? searchData(keyword) : sheetData;
+            renderChips(hasKeyword ? base : sheetData.filter(r => (r.customer || 'Khác') === activeCustomer));
+            const results = activeCustomer ? base.filter(r => (r.customer || 'Khác') === activeCustomer) : base;
+            displayResults(results, keyword);
         }
-        
+
+        function resetFilterAndSearch() {
+            activeCustomer = '';
+            handleSearch();
+        }
+
+        // Hàm khởi tạo
+        async function init() {
+            const input = document.getElementById('searchInput');
+
+            // Thêm sự kiện cho nút tìm kiếm
+            document.getElementById('searchButton').addEventListener('click', handleSearch);
+
+            // Tìm ngay khi gõ (debounce nhẹ). Đổi từ khóa thì bỏ lọc khách hàng cũ.
+            let timer;
+            input.addEventListener('input', () => {
+                document.getElementById('field').classList.toggle('has-value', input.value.length > 0);
+                clearTimeout(timer);
+                timer = setTimeout(resetFilterAndSearch, 120);
+            });
+
+            // Thêm sự kiện cho phím Enter / Escape
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { clearTimeout(timer); handleSearch(); }
+                if (e.key === 'Escape') { input.value = ''; resetFilterAndSearch(); }
+            });
+
+            // Xóa từ khóa
+            document.getElementById('clearButton').addEventListener('click', () => {
+                input.value = '';
+                resetFilterAndSearch();
+                input.focus();
+            });
+
+            // Lọc theo khách hàng
+            document.getElementById('chips').addEventListener('click', (e) => {
+                const chip = e.target.closest('.chip');
+                if (!chip) return;
+                const name = chip.dataset.customer;
+                activeCustomer = (name === activeCustomer) ? '' : name;
+                handleSearch();
+            });
+
+            // Phím tắt "/" để về ô tìm kiếm
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement !== input && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    e.preventDefault();
+                    input.focus();
+                }
+            });
+
+            // Auto focus vào ô tìm kiếm
+            input.focus();
+
+            // Tải dữ liệu TRỰC TIẾP từ Google Sheets
+            await loadSheetData();
+        }
+
         // Khởi chạy ứng dụng
         document.addEventListener('DOMContentLoaded', init);
     </script>
